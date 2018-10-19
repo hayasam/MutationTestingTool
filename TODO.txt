@@ -1,0 +1,8 @@
+// TODO
+
+exclure les fonctions @Test et main
+
+1. Créer classe pour le projet, avec méthode statique pour lancer les mutations sur un projet
+2. Outil doit cloner le projet voulu dans un autre dossier, en modifiant à chaque fois 1 chose dans 1 fichier
+3. Faire un programme Java à qui on passe le chemin vers le projet en argument
+4. Faire la compilation et l'exécution des tests de façon automatique

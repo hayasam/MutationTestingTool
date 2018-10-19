@@ -1,3 +1,28 @@
+import spoon.Launcher;
+import spoon.SpoonAPI;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+
+import java.util.Collection;
+import java.util.List;
+
+public class MutationProject {
+
+    public static void main(String[] args) {
+        String projectPath = "/home-reseau/acornill/Documents/SampleProject"; // TODO utiliser args
+        SpoonAPI spoon = new Launcher();
+        spoon.addInputResource(projectPath);
+        spoon.addProcessor(new VoidMethodProcessor());
+        spoon.addProcessor(new PrimitiveTypeProcessor());
+        spoon.run();
+    }
+
+    public static void testMutation() {
+        System.out.println("Testing mutation");
+    }
+
+}
+/*
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -56,3 +81,5 @@ public class SampleClassTest {
     }
 
 }
+
+ */

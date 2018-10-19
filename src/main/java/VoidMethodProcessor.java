@@ -14,5 +14,7 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> {
 
     public void process(CtMethod ctMethod) {
         ctMethod.getBody().getStatements().clear();
+        System.out.println("void " + ctMethod.getSimpleName()); // TODO
+        MutationProject.testMutation();
     }
 }
