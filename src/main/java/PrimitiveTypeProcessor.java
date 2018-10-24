@@ -10,7 +10,22 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
     public boolean isToBeProcessed(CtMethod candidate) {
         return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType());
 
+
     }
+
+    /*
+    @Test
+	public void testCompileStatementWithReturn() {
+		// contract: a snippet with return can be compiled.
+		CtElement el = SnippetCompilationHelper.compileStatement(
+				factory.Code().createCodeSnippetStatement("return 3"),
+				factory.Type().INTEGER
+		);
+		assertTrue(CtReturn.class.isAssignableFrom(el.getClass()));
+		assertEquals("return 3", el.toString());
+	}
+
+     */
 
     public void process(CtMethod ctMethod) {
         ctMethod.getBody().getStatements().clear();
@@ -43,6 +58,6 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
                 break;
         }
         System.out.println("primitive type " + ctMethod.getSimpleName()); // TODO
-        MutationProject.testMutation();
+        MutationProject.testMutation(ctMethod.getPath().toString());
     }
 }
