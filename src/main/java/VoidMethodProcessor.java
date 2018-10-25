@@ -1,7 +1,11 @@
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class VoidMethodProcessor extends AbstractProcessor<CtMethod> {
 
@@ -18,10 +22,15 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> {
     }
 
     public void process(CtMethod ctMethod) {
+
+        List<CtStatement> backup = new ArrayList<>(ctMethod.getBody().getStatements());
         ctMethod.getBody().getStatements().clear();
-        System.out.println("void " + ctMethod.getSimpleName());
+
+        System.out.println("void " + ctMethod.getSimpleName()); // TODO remove
+
         // TODO -> ignore @Test
 
         MutationProject.testMutation(ctMethod);
+        ctMethod.getBody().getStatements().addAll(backup);
     }
 }

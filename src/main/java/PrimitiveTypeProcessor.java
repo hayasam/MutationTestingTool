@@ -1,7 +1,11 @@
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
 
@@ -28,6 +32,7 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
      */
 
     public void process(CtMethod ctMethod) {
+        List<CtStatement> backup = new ArrayList<>(ctMethod.getBody().getStatements());
         ctMethod.getBody().getStatements().clear();
         CtTypeReference type = ctMethod.getType();
 
@@ -57,7 +62,10 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
                 ctMethod.getBody().addStatement(getFactory().<Boolean>createReturn().setReturnedExpression(getFactory().Code().createLiteral(false)));
                 break;
         }
-        System.out.println("primitive type " + ctMethod.getSimpleName()); // TODO
+        System.out.println("primitive type " + ctMethod.getSimpleName()); // TODO remove
         MutationProject.testMutation(ctMethod);
+
+        ctMethod.getBody().getStatements().clear();
+        ctMethod.getBody().getStatements().addAll(backup);
     }
 }

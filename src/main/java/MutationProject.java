@@ -91,7 +91,6 @@ public class MutationProject {
                 spoon.addProcessor(new PrimitiveTypeProcessor());
                 spoon.run();
 
-                /* TODO
                 try
                 {
                     Files.write(f, fileContent);
@@ -101,7 +100,7 @@ public class MutationProject {
                     System.err.println("Something went wrong while writing to " + currentFilePath);
                     e.printStackTrace();
                     System.exit(1);
-                }*/
+                }
             });
         }
         catch (IOException e)
@@ -132,5 +131,18 @@ public class MutationProject {
             e.printStackTrace();
             System.exit(1);
         }
+
+        // TODO exécuter tests maven
+        /*
+        try
+        {
+            Runtime.getRuntime().exec("mvn clean compile test");
+        }
+        catch(IOException e)
+        {
+            System.err.println("Something went wrong while executing tests");
+            e.printStackTrace();
+            System.exit(1);
+        }*/
     }
 }
