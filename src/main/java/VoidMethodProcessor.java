@@ -19,11 +19,6 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> {
         System.out.println("void " + ctMethod.getSimpleName());
         // TODO -> ignore main and @Test
 
-        CtElement el = ctMethod;
-        while(!(el instanceof CtType) || !((CtType)el).isTopLevel())
-            el = el.getParent();
-
-        System.out.println(((CtType)el).getShortRepresentation());
-        MutationProject.testMutation(((CtType)el).getQualifiedName());
+        MutationProject.testMutation(ctMethod);
     }
 }

@@ -58,6 +58,6 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
                 break;
         }
         System.out.println("primitive type " + ctMethod.getSimpleName()); // TODO
-        MutationProject.testMutation(ctMethod.getPath().toString());
+        MutationProject.testMutation(ctMethod);
     }
 }
