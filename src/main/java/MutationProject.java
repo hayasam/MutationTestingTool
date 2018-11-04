@@ -1,17 +1,15 @@
 import org.apache.commons.io.FileUtils;
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -21,15 +19,13 @@ public class MutationProject {
     private static String currentFilePath;
 
     public static void main(String[] args) {
-        String projectPath = "/home-reseau/ptestart/Bureau/SampleProject"; // TODO utiliser args
+        String projectPath = "../TEST_PROJECT_S9_SampleProject"; // TODO utiliser args
         File project = new File(projectPath);
-        if(!project.exists())
-        {
+        if(!project.exists()) {
             System.err.println("Error: directory " + projectPath + " does not exist!");
             System.exit(1);
         }
-        if(!project.isDirectory())
-        {
+        if(!project.isDirectory()) {
             System.err.println("Error: " + projectPath + " is not a directory!");
             System.exit(1);
         }
@@ -39,18 +35,14 @@ public class MutationProject {
         String testProjectPath = projectPath + "_MutationTest";
         File testProject = new File(testProjectPath);
 
-        while(testProject.exists())
-        {
+        while(testProject.exists()) {
             testProjectPath += "_";
             testProject = new File(testProjectPath);
         }
 
-        try
-        {
+        try {
             FileUtils.copyDirectory(project, testProject);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.err.println("Something went wrong while copying the project!");
             e.printStackTrace();
             System.exit(1);
@@ -62,14 +54,12 @@ public class MutationProject {
         env.useTabulations(true);
 
         String testProjectSrc = testProjectPath + "/src/main/java";
-        if(!new File(testProjectSrc).exists())
-        {
+        if(!new File(testProjectSrc).exists()) {
             System.err.println("Error: directory " + testProjectSrc + " does not exist!");
             System.exit(1);
         }
 
-        try
-        {
+        try {
             Files.walk(Paths.get(testProjectSrc)).filter(f -> f.toString().endsWith(".java")).forEach(f -> {
                 currentFilePath = f.toAbsolutePath().toString();
                 byte[] fileContent = null;
@@ -77,9 +67,7 @@ public class MutationProject {
                 try
                 {
                     fileContent = Files.readAllBytes(f);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     System.err.println("Something went wrong while reading file " + f.toAbsolutePath().toString());
                     e.printStackTrace();
                     System.exit(1);
@@ -91,58 +79,61 @@ public class MutationProject {
                 spoon.addProcessor(new PrimitiveTypeProcessor());
                 spoon.run();
 
-                try
-                {
+                try {
                     Files.write(f, fileContent);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     System.err.println("Something went wrong while writing to " + currentFilePath);
                     e.printStackTrace();
                     System.exit(1);
                 }
             });
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.err.println("Something went wrong while iterating over source files!");
             e.printStackTrace();
             System.exit(1);
         }
 
-        // TODO supprimer dossier de projet test
+        // delete the mutated project
+
+        try {
+            Files.walk(testProject.toPath())
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            System.err.println("Something went wrong while deleting the mutated project!");
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
-    public static void testMutation(CtElement mutatedElement)
-    {
+    public static void testMutation(CtElement mutatedElement) {
         while(!(mutatedElement instanceof CtType) || !((CtType)mutatedElement).isTopLevel())
             mutatedElement = mutatedElement.getParent();
 
         DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
         printer.calculate(null, Collections.singletonList((CtType<?>) mutatedElement));
 
-        try
-        {
+        try {
             Files.write(Paths.get(currentFilePath), printer.getResult().getBytes());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.err.println("Something went wrong while writing to " + currentFilePath);
             e.printStackTrace();
             System.exit(1);
         }
 
         // TODO exécuter tests maven
+
         /*
-        try
-        {
-            Runtime.getRuntime().exec("mvn clean compile test");
-        }
-        catch(IOException e)
-        {
+        try {
+            System.out.println("BEFORE maven cmd");
+            Runtime.getRuntime().exec("mvn -f ../TEST_PROJECT_S9_SampleProject_MutationTest clean compile test");
+            System.out.println("AFTER maven cmd");
+        } catch(IOException e) {
             System.err.println("Something went wrong while executing tests");
             e.printStackTrace();
             System.exit(1);
-        }*/
+        }
+        */
     }
 }

@@ -12,7 +12,8 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> {
 
     @Override
     public boolean isToBeProcessed(CtMethod candidate) {
-        return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType());
+        return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType())
+                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test
 
 
     }
