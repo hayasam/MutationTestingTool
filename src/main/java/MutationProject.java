@@ -6,8 +6,10 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.StandardEnvironment;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,9 +18,11 @@ import java.util.*;
 public class MutationProject {
 
     private static StandardEnvironment env;
-    private static String currentFilePath;
+    private static String currentFilePath, testProjectPath;
+    private static int mutationCount;
+    private static List<String> survivingMutants;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // TODO utiliser 2eme arg optionnel comme chemin vers maven
         String projectPath = "../TEST_PROJECT_S9_SampleProject"; // TODO utiliser args
         File project = new File(projectPath);
         if(!project.exists()) {
@@ -32,7 +36,7 @@ public class MutationProject {
 
         // create a copy of the project, and make sure the directory doesn't already exist
 
-        String testProjectPath = projectPath + "_MutationTest";
+        testProjectPath = projectPath + "_MutationTest";
         File testProject = new File(testProjectPath);
 
         while(testProject.exists()) {
@@ -58,6 +62,9 @@ public class MutationProject {
             System.err.println("Error: directory " + testProjectSrc + " does not exist!");
             System.exit(1);
         }
+
+        mutationCount = 0;
+        survivingMutants = new ArrayList<>();
 
         try {
             Files.walk(Paths.get(testProjectSrc)).filter(f -> f.toString().endsWith(".java")).forEach(f -> {
@@ -93,6 +100,21 @@ public class MutationProject {
             System.exit(1);
         }
 
+        // print results
+
+        System.out.println();
+        System.out.println("--------- MUTATION TESTING RESULTS ---------");
+        System.out.println();
+        System.out.println("Created mutants: " + mutationCount);
+        System.out.println("Surviving mutants: " + survivingMutants.size() + " (" + (Math.floor(survivingMutants.size() * 10000.0 / mutationCount) / 100) + "%)");
+        if(!survivingMutants.isEmpty())
+        {
+            System.out.println();
+            System.out.println("Surviving mutants list:");
+            for(String s : survivingMutants)
+                System.out.println("* " + s);
+        }
+
         // delete the mutated project
 
         try {
@@ -122,18 +144,43 @@ public class MutationProject {
             System.exit(1);
         }
 
-        // TODO exécuter tests maven
+        try
+        {
+            ProcessBuilder ps = new ProcessBuilder("mvn","-f", testProjectPath, "clean", "compile", "test");
+            ps.redirectErrorStream(true);
+            Process pr = ps.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            String line;
+            boolean gotResults = false, hasFailures = false;
+            while ((line = in.readLine()) != null)
+            {
+                if(line.startsWith("Tests run:"))
+                {
+                    hasFailures = !line.contains("Failures: 0,");
+                    gotResults = true;
+                    break;
+                }
+            }
 
-        /*
-        try {
-            System.out.println("BEFORE maven cmd");
-            Runtime.getRuntime().exec("mvn -f ../TEST_PROJECT_S9_SampleProject_MutationTest clean compile test");
-            System.out.println("AFTER maven cmd");
-        } catch(IOException e) {
+            if(!gotResults)
+            {
+                System.err.println("Error: could not get tests results after running the command!");
+                System.exit(1);
+            }
+
+            ++mutationCount;
+            if(!hasFailures)
+            {
+                survivingMutants.add(mutatedElement.toString()); // TODO description d'une mutation
+            }
+
+            pr.waitFor();
+            in.close();
+
+        } catch(Exception e) {
             System.err.println("Something went wrong while executing tests");
             e.printStackTrace();
             System.exit(1);
         }
-        */
     }
 }
