@@ -9,7 +9,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
+public class AndOrProcessor extends AbstractProcessor<CtMethod> {
 
 
     @Override
@@ -21,9 +21,9 @@ public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
         return isToBeProcessed;
     }
 
-    private static void swapPlusMinus(CtBinaryOperator bo) {
-        if(bo.getKind() == BinaryOperatorKind.PLUS) bo.setKind(BinaryOperatorKind.MINUS);
-        else if(bo.getKind() == BinaryOperatorKind.MINUS) bo.setKind(BinaryOperatorKind.PLUS);
+    private static void swapAndOr(CtBinaryOperator bo) {
+        if(bo.getKind() == BinaryOperatorKind.AND) bo.setKind(BinaryOperatorKind.OR);
+        else if(bo.getKind() == BinaryOperatorKind.OR) bo.setKind(BinaryOperatorKind.AND);
     }
 
     public void process(CtMethod ctMethod) {
@@ -34,9 +34,9 @@ public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
             st.getElements(e->true).forEach((e) -> {
                 if(e instanceof CtBinaryOperator) {
                     CtBinaryOperator bo = (CtBinaryOperator) e;
-                    swapPlusMinus(bo);
+                    swapAndOr(bo);
                     MutationProject.testMutation(ctMethod);
-                    swapPlusMinus(bo);
+                    swapAndOr(bo);
                 }
             });
         }

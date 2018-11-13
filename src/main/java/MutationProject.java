@@ -82,8 +82,10 @@ public class MutationProject {
 
                 SpoonAPI spoon = new Launcher();
                 spoon.addInputResource(currentFilePath);
-                spoon.addProcessor(new VoidMethodProcessor());
-                spoon.addProcessor(new PrimitiveTypeProcessor());
+                // spoon.addProcessor(new VoidMethodProcessor());
+                // spoon.addProcessor(new PrimitiveTypeProcessor());
+                spoon.addProcessor(new PlusMinusProcessor());
+                spoon.addProcessor(new AndOrProcessor());
                 spoon.run();
 
                 try {
