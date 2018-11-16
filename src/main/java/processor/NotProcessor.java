@@ -1,6 +1,6 @@
 package processor;
 
-import mutationproject.IMutationProcessor;
+import mutationproject.MutationProcessor;
 import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotProcessor extends AbstractProcessor<CtExpression> implements IMutationProcessor {
+public class NotProcessor extends MutationProcessor<CtExpression> {
 
     private CtExpression ctExpression;
     private CtMethod met;

@@ -1,6 +1,6 @@
 package processor;
 
-import mutationproject.IMutationProcessor;
+import mutationproject.MutationProcessor;
 import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtReturn;
@@ -12,7 +12,7 @@ import spoon.support.compiler.SnippetCompilationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> implements IMutationProcessor {
+public class PrimitiveTypeProcessor extends MutationProcessor<CtMethod> {
 
     private CtMethod method;
     private List<CtStatement> backup;

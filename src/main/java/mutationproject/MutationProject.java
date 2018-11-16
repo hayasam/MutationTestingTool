@@ -1,6 +1,5 @@
 package mutationproject;
 
-import mutationproject.IMutationProcessor;
 import org.apache.commons.io.FileUtils;
 import processor.*;
 import spoon.Launcher;
@@ -160,7 +159,7 @@ public class MutationProject {
         }
     }
 
-    public static void testMutation(IMutationProcessor processor, CtElement mutatedElement) {
+    public static void testMutation(MutationProcessor processor, CtElement mutatedElement) {
         while(!(mutatedElement instanceof CtType) || !((CtType)mutatedElement).isTopLevel())
             mutatedElement = mutatedElement.getParent();
 

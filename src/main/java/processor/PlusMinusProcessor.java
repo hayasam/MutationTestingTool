@@ -1,6 +1,6 @@
 package processor;
 
-import mutationproject.IMutationProcessor;
+import mutationproject.MutationProcessor;
 import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -13,7 +13,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlusMinusProcessor extends AbstractProcessor<CtBinaryOperator> implements IMutationProcessor {
+public class PlusMinusProcessor extends MutationProcessor<CtBinaryOperator> {
 
     private CtBinaryOperator ctBinaryOperator;
     private CtMethod met;
