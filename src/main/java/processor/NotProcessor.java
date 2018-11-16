@@ -1,3 +1,7 @@
+package processor;
+
+import mutationproject.IMutationProcessor;
+import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
@@ -30,7 +34,7 @@ public class NotProcessor extends AbstractProcessor<CtExpression> implements IMu
         op.setKind(UnaryOperatorKind.NOT);
         ctExpression.replace(op);
 
-        MutationProject.testMutation(ctExpression);
+        MutationProject.testMutation(this, ctExpression);
     }
 
     @Override
@@ -40,6 +44,7 @@ public class NotProcessor extends AbstractProcessor<CtExpression> implements IMu
 
     @Override
     public String getMutationDescription() {
-        return null;
+
+        return null; // TODO
     }
 }
