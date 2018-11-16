@@ -35,6 +35,9 @@ public class MutationProject {
         }
 
         String projectPath = args[0];
+        while (projectPath.endsWith("\\") || projectPath.endsWith("/"))
+            projectPath = projectPath.substring(0, projectPath.length() - 1);
+
         File project = new File(projectPath);
         if(!project.exists()) {
             System.err.println("Error: directory " + projectPath + " does not exist!");
@@ -45,9 +48,21 @@ public class MutationProject {
             System.exit(1);
         }
 
+        File projectSrc = new File(projectPath + "\\src"), projectPom = new File(projectPath + "\\pom.xml");
+        if(!projectSrc.exists())
+        {
+            System.err.println("Error: " + projectPath + " does not have a src directory!");
+            System.exit(1);
+        }
+        if(!projectPom.exists())
+        {
+            System.err.println("Error: " + projectPath + " does not have a pom.xml file!");
+            System.exit(1);
+        }
+
         if(args.length >= 2)
         {
-            mavenCommand = args[1]; // TODO tester
+            mavenCommand = args[1];
         }
         else
         {
@@ -65,7 +80,13 @@ public class MutationProject {
         }
 
         try {
-            FileUtils.copyDirectory(project, testProject);
+            if(!testProject.mkdir())
+            {
+                System.err.println("Error: could not create test project directory!");
+                System.exit(1);
+            }
+            FileUtils.copyDirectory(projectSrc, new File(testProjectPath + "\\src"));
+            FileUtils.copyFile(projectPom, new File(testProjectPath + "\\pom.xml"));
         } catch (IOException e) {
             System.err.println("Something went wrong while copying the project!");
             e.printStackTrace();
@@ -77,7 +98,7 @@ public class MutationProject {
         env.setComplianceLevel(8);
         env.useTabulations(true);
 
-        String testProjectSrc = testProjectPath + "/src/main/java";
+        String testProjectSrc = testProjectPath + "\\src\\main\\java";
         if(!new File(testProjectSrc).exists()) {
             System.err.println("Error: directory " + testProjectSrc + " does not exist!");
             deleteTestProject();
@@ -87,44 +108,51 @@ public class MutationProject {
         mutationCount = 0;
         survivingMutants = new ArrayList<>();
 
+        /* First list files, then process them. We are not processing files as we encounter them, because it prevents
+        from deleting the test project when an error occurs.
+         */
+        List<Path> filesToProcess = new ArrayList<>();
         try {
-            Files.walk(Paths.get(testProjectSrc)).filter(f -> f.toString().endsWith(".java")).forEach(f -> {
-                currentFilePath = f.toAbsolutePath().toString();
-                byte[] fileContent = null;
-
-                try
-                {
-                    fileContent = Files.readAllBytes(f);
-                } catch (IOException e) {
-                    System.err.println("Something went wrong while reading file " + f.toAbsolutePath().toString());
-                    e.printStackTrace();
-                    deleteTestProject();
-                    System.exit(1);
-                }
-
-                SpoonAPI spoon = new Launcher();
-                spoon.addInputResource(currentFilePath);
-                // spoon.addProcessor(new VoidMethodProcessor());
-                spoon.addProcessor(new PrimitiveTypeProcessor());
-                // spoon.addProcessor(new ObjectMethodProcessor());
-                // spoon.addProcessor(new PlusMinusProcessor());
-                // spoon.addProcessor(new AndOrProcessor());
-                spoon.run();
-
-                try {
-                    Files.write(f, fileContent);
-                } catch (IOException e) {
-                    System.err.println("Something went wrong while writing to " + currentFilePath);
-                    e.printStackTrace();
-                    deleteTestProject();
-                    System.exit(1);
-                }
-            });
+            Files.walk(Paths.get(testProjectSrc)).filter(f -> f.toString().endsWith(".java")).forEach(filesToProcess::add);
         } catch (IOException e) {
             System.err.println("Something went wrong while iterating over source files!");
             e.printStackTrace();
             deleteTestProject();
             System.exit(1);
+        }
+
+        for(Path f : filesToProcess)
+        {
+            currentFilePath = f.toAbsolutePath().toString();
+            byte[] fileContent = null;
+
+            try
+            {
+                fileContent = Files.readAllBytes(f);
+            } catch (IOException e) {
+                System.err.println("Something went wrong while reading file " + f.toAbsolutePath().toString());
+                e.printStackTrace();
+                deleteTestProject();
+                System.exit(1);
+            }
+
+            SpoonAPI spoon = new Launcher();
+            spoon.addInputResource(currentFilePath);
+            // spoon.addProcessor(new VoidMethodProcessor());
+            spoon.addProcessor(new PrimitiveTypeProcessor());
+            // spoon.addProcessor(new ObjectMethodProcessor());
+            // spoon.addProcessor(new PlusMinusProcessor());
+            // spoon.addProcessor(new AndOrProcessor());
+            spoon.run();
+
+            try {
+                Files.write(f, fileContent);
+            } catch (IOException e) {
+                System.err.println("Something went wrong while writing to " + currentFilePath);
+                e.printStackTrace();
+                deleteTestProject();
+                System.exit(1);
+            }
         }
 
         // print results
@@ -177,25 +205,31 @@ public class MutationProject {
 
         try
         {
-            ProcessBuilder ps = new ProcessBuilder(mavenCommand,"-f", testProjectPath, "clean", "compile", "test");
+            ProcessBuilder ps = new ProcessBuilder(mavenCommand, "-q", "-f", testProjectPath, "clean", "compile", "test");
             ps.redirectErrorStream(true);
             Process pr = ps.start();
             BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
+            List<String> commandOutput = new ArrayList<>();
             boolean gotResults = false, hasFailures = false;
             while ((line = in.readLine()) != null)
             {
-                if(line.startsWith("Tests run:"))
+                commandOutput.add(line);
+                if(!gotResults && line.startsWith("Tests run:"))
                 {
                     hasFailures = !line.contains("Failures: 0,");
                     gotResults = true;
-                    break;
+                    // don't break the loop here: it's necessary to continue reading so that the buffer doesn't fill up
                 }
             }
 
             if(!gotResults)
             {
                 System.err.println("Error: could not get tests results after running the command!");
+                System.err.println("Command output:");
+                for(String s : commandOutput)
+                    System.err.println(s);
+
                 deleteTestProject();
                 System.exit(1);
             }
@@ -203,7 +237,11 @@ public class MutationProject {
             ++mutationCount;
             if(!hasFailures)
             {
-                survivingMutants.add(processor.getMutationDescription() + " in file " + currentFilePath.substring(currentFilePath.indexOf("/src/main/java/") + 15));
+                int substringIndex = currentFilePath.indexOf("\\src\\main\\java\\");
+                if(substringIndex == -1)
+                    substringIndex = currentFilePath.indexOf("/src/main/java/");
+
+                survivingMutants.add(processor.getMutationDescription() + " in file " + currentFilePath.substring(substringIndex + 15));
             }
 
             pr.waitFor();
