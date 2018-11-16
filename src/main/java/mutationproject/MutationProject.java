@@ -1,4 +1,9 @@
+import mutationproject.IMutationProcessor;
 import org.apache.commons.io.FileUtils;
+import processor.AndOrProcessor;
+import processor.PlusMinusProcessor;
+import processor.PrimitiveTypeProcessor;
+import processor.VoidMethodProcessor;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtElement;
@@ -82,8 +87,8 @@ public class MutationProject {
 
                 SpoonAPI spoon = new Launcher();
                 spoon.addInputResource(currentFilePath);
-                // spoon.addProcessor(new VoidMethodProcessor());
-                // spoon.addProcessor(new PrimitiveTypeProcessor());
+                spoon.addProcessor(new VoidMethodProcessor());
+                spoon.addProcessor(new PrimitiveTypeProcessor());
                 spoon.addProcessor(new PlusMinusProcessor());
                 spoon.addProcessor(new AndOrProcessor());
                 spoon.run();
@@ -131,7 +136,7 @@ public class MutationProject {
         }
     }
 
-    public static void testMutation(CtElement mutatedElement) {
+    public static void testMutation(IMutationProcessor processor, CtElement mutatedElement) {
         while(!(mutatedElement instanceof CtType) || !((CtType)mutatedElement).isTopLevel())
             mutatedElement = mutatedElement.getParent();
 
@@ -173,11 +178,13 @@ public class MutationProject {
             ++mutationCount;
             if(!hasFailures)
             {
-                survivingMutants.add(mutatedElement.toString()); // TODO description d'une mutation
+                survivingMutants.add(processor.getMutationDescription());
             }
 
             pr.waitFor();
             in.close();
+
+            processor.revertChanges();
 
         } catch(Exception e) {
             System.err.println("Something went wrong while executing tests");
