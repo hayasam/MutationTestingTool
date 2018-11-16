@@ -7,6 +7,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,12 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> implemen
 
     @Override
     public boolean isToBeProcessed(CtMethod candidate) {
-        return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType()) // primitive type
+        boolean isToBeProcessed = candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType()) // primitive type
                 && candidate.getAnnotation(org.junit.Test.class) == null
                 && !candidate.isAbstract(); // not an interface method declaration
 
-
+        if (isToBeProcessed) System.out.println("[Valid candidate] primitive type " + candidate.getSimpleName());
+        return isToBeProcessed;
     }
 
     /*
@@ -71,7 +73,7 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> implemen
                 method.getBody().addStatement(getFactory().<Boolean>createReturn().setReturnedExpression(getFactory().Code().createLiteral(false)));
                 break;
         }
-        System.out.println("primitive type " + method.getSimpleName()); // TODO remove
+
         MutationProject.testMutation(this, method);
     }
 

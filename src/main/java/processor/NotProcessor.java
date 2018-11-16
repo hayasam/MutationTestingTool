@@ -15,14 +15,28 @@ import java.util.List;
 public class NotProcessor extends AbstractProcessor<CtExpression> implements IMutationProcessor {
 
     private CtExpression ctExpression;
+    private CtMethod met;
 
     @Override
     public boolean isToBeProcessed(CtExpression candidate) {
-        boolean isToBeProcessed = (candidate.getType().getTypeDeclaration().getSimpleName().equals("boolean"));
-        if(isToBeProcessed) {
-            System.out.println("[Valid candidate] !Not exp " + candidate.toString());
+
+        CtElement el = candidate;
+        do {
+            el = el.getParent();
         }
-        return isToBeProcessed;
+        while(el != null && !(el instanceof CtMethod));
+
+        if(el != null) {
+            this.met = (CtMethod) el;
+            boolean isToBeProcessed = !(this.met.getSimpleName().equals("main") && this.met.isStatic()) // not static main method
+                    && !this.met.isAbstract() // not an interface method declaration
+                    && this.met.getAnnotation(org.junit.Test.class) == null // not a Test
+                    && (candidate.getType().getTypeDeclaration().getSimpleName().equals("boolean")); // bool expr
+
+            if(isToBeProcessed) System.out.println("[Valid candidate] !Not exp " + candidate.toString());
+            return isToBeProcessed;
+        }
+        return false;
 
     }
 
@@ -44,7 +58,8 @@ public class NotProcessor extends AbstractProcessor<CtExpression> implements IMu
 
     @Override
     public String getMutationDescription() {
-
-        return null; // TODO
+        return String.format("Invert boolean expression %s in method %s",
+                this.ctExpression,
+                this.met.getSimpleName());
     }
 }

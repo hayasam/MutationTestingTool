@@ -16,6 +16,7 @@ import java.util.List;
 public class AndOrProcessor extends AbstractProcessor<CtBinaryOperator> implements IMutationProcessor {
 
     private CtBinaryOperator ctBinaryOperator;
+    private CtMethod met;
 
     @Override
     public boolean isToBeProcessed(CtBinaryOperator candidate) {
@@ -27,14 +28,15 @@ public class AndOrProcessor extends AbstractProcessor<CtBinaryOperator> implemen
         while(el != null && !(el instanceof CtMethod));
 
         if(el != null) {
-            CtMethod met = (CtMethod) el;
-            boolean isToBeProcessed = !(met.getSimpleName().equals("main") && met.isStatic()) // not static main method
-                    && !met.isAbstract() // not an interface method declaration
-                    && met.getAnnotation(org.junit.Test.class) == null; // not a Test
-            if(isToBeProcessed) System.out.println("[Valid candidate] AndOr method " + met.getSimpleName());
+            this.met = (CtMethod) el;
+            boolean isToBeProcessed = !(this.met.getSimpleName().equals("main") && this.met.isStatic()) // not static main method
+                    && !this.met.isAbstract() // not an interface method declaration
+                    && this.met.getAnnotation(org.junit.Test.class) == null // not a Test
+                    && (candidate.getKind() == BinaryOperatorKind.AND || candidate.getKind() == BinaryOperatorKind.OR);
+            if(isToBeProcessed) System.out.println("[Valid candidate] AndOr method " + this.met.getSimpleName());
             return isToBeProcessed;
         }
-        else return false;
+        return false;
     }
 
     private static void swapAndOr(CtBinaryOperator bo) {
@@ -55,6 +57,9 @@ public class AndOrProcessor extends AbstractProcessor<CtBinaryOperator> implemen
 
     @Override
     public String getMutationDescription() {
-        return null; // TODO
+        return String.format("Swap && and || between %s and %s in method %s",
+                this.ctBinaryOperator.getLeftHandOperand(),
+                this.ctBinaryOperator.getRightHandOperand(),
+                this.met.getSimpleName());
     }
 }

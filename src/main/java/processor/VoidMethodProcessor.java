@@ -16,10 +16,12 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> implements 
 
     @Override
     public boolean isToBeProcessed(CtMethod candidate) {
-        return candidate.getType().equals(getFactory().Type().voidPrimitiveType()) // not primitive type
+        boolean isToBeProcessed =  candidate.getType().equals(getFactory().Type().voidPrimitiveType()) // not primitive type
                 && !(candidate.getSimpleName().equals("main") && candidate.isStatic()) // not static main method
                 && !candidate.isAbstract() // not an interface method declaration
-                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test
+                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test;
+        if (isToBeProcessed) System.out.println("[Valid candidate] void method " + candidate.getSimpleName());
+        return isToBeProcessed;
     }
 
     public void process(CtMethod ctMethod) {
@@ -27,8 +29,6 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> implements 
         method = ctMethod;
         backup = new ArrayList<>(method.getBody().getStatements());
         method.getBody().getStatements().clear();
-
-        System.out.println("void " + method.getSimpleName()); // TODO remove
 
         MutationProject.testMutation(this, method);
     }

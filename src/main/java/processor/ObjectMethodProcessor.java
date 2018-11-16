@@ -3,9 +3,14 @@ package processor;
 import mutationproject.IMutationProcessor;
 import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.reflect.code.CtExpressionImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +36,16 @@ public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> implement
         method = ctMethod;
         backup = new ArrayList<>(method.getBody().getStatements());
         method.getBody().getStatements().clear();
-        // TODO finir
+
+        method.getBody().addStatement(
+                getFactory().createReturn().setReturnedExpression(getFactory().Code().createLiteral(null)));
 
         MutationProject.testMutation(this, method);
     }
 
     @Override
     public void revertChanges() {
+        method.getBody().getStatements().clear();
         method.getBody().getStatements().addAll(backup);
     }
 
