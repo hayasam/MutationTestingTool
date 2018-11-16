@@ -22,12 +22,29 @@ import java.util.*;
 public class MutationProject {
 
     private static StandardEnvironment env;
-    private static String currentFilePath, testProjectPath;
+    private static String currentFilePath, testProjectPath, mavenCommand;
     private static int mutationCount;
     private static List<String> survivingMutants;
 
     public static void main(String[] args) { // TODO utiliser 2eme arg optionnel comme chemin vers maven
-        String projectPath = "../TEST_PROJECT_S9_SampleProject"; // TODO utiliser args
+
+        args = new String[] {"~/Bureau/Projet Test/TEST_PROJECT_S9_SampleProject", "mvn"}; // TODO enlever
+
+        if(args.length == 0)
+        {
+            System.out.println("Please supply path to the Maven project in the program arguments");
+            System.exit(0);
+        }
+        if(args.length >= 2)
+        {
+            mavenCommand = args[1]; // TODO use
+        }
+        else
+        {
+            mavenCommand = "mvn";
+        }
+
+        String projectPath = args[0];
         File project = new File(projectPath);
         if(!project.exists()) {
             System.err.println("Error: directory " + projectPath + " does not exist!");
