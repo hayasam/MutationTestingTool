@@ -1,3 +1,7 @@
+package processor;
+
+import mutationproject.IMutationProcessor;
+import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
@@ -6,7 +10,10 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> {
+public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> implements IMutationProcessor {
+
+    private CtMethod method;
+    private List<CtStatement> backup;
 
     @Override
     public boolean isToBeProcessed(CtMethod candidate){
@@ -21,12 +28,20 @@ public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> {
 
     public void process(CtMethod ctMethod){
 
-        List<CtStatement> backup=new ArrayList<>(ctMethod.getBody().getStatements());
-        ctMethod.getBody().getStatements().clear();
-        
+        method = ctMethod;
+        backup = new ArrayList<>(method.getBody().getStatements());
+        method.getBody().getStatements().clear();
 
-        MutationProject.testMutation(ctMethod);
-//        ctMethod.getBody().getStatements().addAll(backup);
+        MutationProject.testMutation(this, method);
     }
 
+    @Override
+    public void revertChanges() {
+        method.getBody().getStatements().addAll(backup);
+    }
+
+    @Override
+    public String getMutationDescription() {
+        return null; // TODO
+    }
 }

@@ -1,3 +1,6 @@
+package processor;
+
+import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -35,13 +38,12 @@ public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
                 if(e instanceof CtBinaryOperator) {
                     CtBinaryOperator bo = (CtBinaryOperator) e;
                     swapPlusMinus(bo);
-                    MutationProject.testMutation(ctMethod);
+                    // MutationProject.testMutation(ctMethod);
                     swapPlusMinus(bo);
                 }
             });
         }
 
-        // MutationProject.testMutation(ctMethod);
         // ctMethod.getBody().getStatements().addAll(backup);
     }
 }

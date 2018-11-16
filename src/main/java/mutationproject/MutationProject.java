@@ -1,3 +1,5 @@
+package mutationproject;
+
 import mutationproject.IMutationProcessor;
 import org.apache.commons.io.FileUtils;
 import processor.AndOrProcessor;

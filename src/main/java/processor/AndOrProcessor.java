@@ -1,3 +1,5 @@
+package processor;
+
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -35,13 +37,12 @@ public class AndOrProcessor extends AbstractProcessor<CtMethod> {
                 if(e instanceof CtBinaryOperator) {
                     CtBinaryOperator bo = (CtBinaryOperator) e;
                     swapAndOr(bo);
-                    MutationProject.testMutation(ctMethod);
+                    // MutationProject.testMutation(ctMethod);
                     swapAndOr(bo);
                 }
             });
         }
 
-        // MutationProject.testMutation(ctMethod);
         // ctMethod.getBody().getStatements().addAll(backup);
     }
 }
