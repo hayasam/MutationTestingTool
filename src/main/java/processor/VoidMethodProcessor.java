@@ -40,6 +40,6 @@ public class VoidMethodProcessor extends AbstractProcessor<CtMethod> implements 
 
     @Override
     public String getMutationDescription() {
-        return null; // TODO
+        return "Remove body in void method " + method.getSimpleName();
     }
 }

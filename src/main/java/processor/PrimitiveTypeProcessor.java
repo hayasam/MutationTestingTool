@@ -18,8 +18,9 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> implemen
 
     @Override
     public boolean isToBeProcessed(CtMethod candidate) {
-        return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType())
-                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test
+        return candidate.getType().isPrimitive() && !candidate.getType().equals(getFactory().Type().voidPrimitiveType()) // primitive type
+                && candidate.getAnnotation(org.junit.Test.class) == null
+                && !candidate.isAbstract(); // not an interface method declaration
 
 
     }
@@ -83,6 +84,6 @@ public class PrimitiveTypeProcessor extends AbstractProcessor<CtMethod> implemen
 
     @Override
     public String getMutationDescription() {
-        return null; // TODO
+        return "Remove body and return default value in method " + method.getSimpleName();
     }
 }

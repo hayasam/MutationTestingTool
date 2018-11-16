@@ -31,6 +31,7 @@ public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> implement
         method = ctMethod;
         backup = new ArrayList<>(method.getBody().getStatements());
         method.getBody().getStatements().clear();
+        // TODO finir
 
         MutationProject.testMutation(this, method);
     }
@@ -42,6 +43,6 @@ public class ObjectMethodProcessor extends AbstractProcessor<CtMethod> implement
 
     @Override
     public String getMutationDescription() {
-        return null; // TODO
+        return "Remove body and return null in method " + method.getSimpleName();
     }
 }

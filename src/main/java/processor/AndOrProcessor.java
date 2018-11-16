@@ -1,5 +1,7 @@
 package processor;
 
+import mutationproject.IMutationProcessor;
+import mutationproject.MutationProject;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -11,16 +13,28 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AndOrProcessor extends AbstractProcessor<CtMethod> {
+public class AndOrProcessor extends AbstractProcessor<CtBinaryOperator> implements IMutationProcessor {
 
+    private CtBinaryOperator ctBinaryOperator;
 
     @Override
-    public boolean isToBeProcessed(CtMethod candidate) {
-        boolean isToBeProcessed = !(candidate.getSimpleName().equals("main") && candidate.isStatic()) // not static main method
-                && !candidate.isAbstract() // not an interface method declaration
-                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test
-        if(isToBeProcessed) System.out.println("[Valid candidate] PlusMinus method " + candidate.getSimpleName());
-        return isToBeProcessed;
+    public boolean isToBeProcessed(CtBinaryOperator candidate) {
+
+        CtElement el = candidate;
+        do {
+            el = el.getParent();
+        }
+        while(el != null && !(el instanceof CtMethod));
+
+        if(el != null) {
+            CtMethod met = (CtMethod) el;
+            boolean isToBeProcessed = !(met.getSimpleName().equals("main") && met.isStatic()) // not static main method
+                    && !met.isAbstract() // not an interface method declaration
+                    && met.getAnnotation(org.junit.Test.class) == null; // not a Test
+            if(isToBeProcessed) System.out.println("[Valid candidate] AndOr method " + met.getSimpleName());
+            return isToBeProcessed;
+        }
+        else return false;
     }
 
     private static void swapAndOr(CtBinaryOperator bo) {
@@ -28,21 +42,19 @@ public class AndOrProcessor extends AbstractProcessor<CtMethod> {
         else if(bo.getKind() == BinaryOperatorKind.OR) bo.setKind(BinaryOperatorKind.AND);
     }
 
-    public void process(CtMethod ctMethod) {
+    public void process(CtBinaryOperator ctBinaryOperator) {
+        this.ctBinaryOperator = ctBinaryOperator;
+        swapAndOr(this.ctBinaryOperator);
+        MutationProject.testMutation(this, this.ctBinaryOperator);
+    }
 
-        // List<CtStatement> backup = new ArrayList<>(ctMethod.getBody().getStatements());
+    @Override
+    public void revertChanges() {
+        swapAndOr(this.ctBinaryOperator);
+    }
 
-        for(CtStatement st : ctMethod.getBody().getStatements()) {
-            st.getElements(e->true).forEach((e) -> {
-                if(e instanceof CtBinaryOperator) {
-                    CtBinaryOperator bo = (CtBinaryOperator) e;
-                    swapAndOr(bo);
-                    // MutationProject.testMutation(ctMethod);
-                    swapAndOr(bo);
-                }
-            });
-        }
-
-        // ctMethod.getBody().getStatements().addAll(backup);
+    @Override
+    public String getMutationDescription() {
+        return null; // TODO
     }
 }

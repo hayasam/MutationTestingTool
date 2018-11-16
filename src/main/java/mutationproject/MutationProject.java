@@ -2,10 +2,7 @@ package mutationproject;
 
 import mutationproject.IMutationProcessor;
 import org.apache.commons.io.FileUtils;
-import processor.AndOrProcessor;
-import processor.PlusMinusProcessor;
-import processor.PrimitiveTypeProcessor;
-import processor.VoidMethodProcessor;
+import processor.*;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtElement;
@@ -89,10 +86,11 @@ public class MutationProject {
 
                 SpoonAPI spoon = new Launcher();
                 spoon.addInputResource(currentFilePath);
-                spoon.addProcessor(new VoidMethodProcessor());
+                // spoon.addProcessor(new VoidMethodProcessor());
                 spoon.addProcessor(new PrimitiveTypeProcessor());
-                spoon.addProcessor(new PlusMinusProcessor());
-                spoon.addProcessor(new AndOrProcessor());
+                // spoon.addProcessor(new ObjectMethodProcessor());
+                // spoon.addProcessor(new PlusMinusProcessor());
+                // spoon.addProcessor(new AndOrProcessor());
                 spoon.run();
 
                 try {
@@ -180,7 +178,7 @@ public class MutationProject {
             ++mutationCount;
             if(!hasFailures)
             {
-                survivingMutants.add(processor.getMutationDescription());
+                survivingMutants.add(processor.getMutationDescription() + " in file " + currentFilePath.substring(currentFilePath.indexOf("/src/main/java/") + 15));
             }
 
             pr.waitFor();
