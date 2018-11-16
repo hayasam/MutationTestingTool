@@ -9,16 +9,28 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
+public class PlusMinusProcessor extends AbstractProcessor<CtBinaryOperator> implements IMutationProcessor {
 
+    private CtBinaryOperator ctBinaryOperator;
 
     @Override
-    public boolean isToBeProcessed(CtMethod candidate) {
-        boolean isToBeProcessed = !(candidate.getSimpleName().equals("main") && candidate.isStatic()) // not static main method
-                && !candidate.isAbstract() // not an interface method declaration
-                && candidate.getAnnotation(org.junit.Test.class) == null; // not a Test
-        if(isToBeProcessed) System.out.println("[Valid candidate] PlusMinus method " + candidate.getSimpleName());
-        return isToBeProcessed;
+    public boolean isToBeProcessed(CtBinaryOperator candidate) {
+
+        CtElement el = candidate;
+        do {
+            el = el.getParent();
+        }
+        while(el != null && !(el instanceof CtMethod));
+
+        if(el != null) {
+            CtMethod met = (CtMethod) el;
+            boolean isToBeProcessed = !(met.getSimpleName().equals("main") && met.isStatic()) // not static main method
+                    && !met.isAbstract() // not an interface method declaration
+                    && met.getAnnotation(org.junit.Test.class) == null; // not a Test
+            if(isToBeProcessed) System.out.println("[Valid candidate] PlusMinus method " + met.getSimpleName());
+            return isToBeProcessed;
+        }
+        else return false;
     }
 
     private static void swapPlusMinus(CtBinaryOperator bo) {
@@ -26,22 +38,19 @@ public class PlusMinusProcessor extends AbstractProcessor<CtMethod> {
         else if(bo.getKind() == BinaryOperatorKind.MINUS) bo.setKind(BinaryOperatorKind.PLUS);
     }
 
-    public void process(CtMethod ctMethod) {
+    public void process(CtBinaryOperator ctBinaryOperator) {
+        this.ctBinaryOperator = ctBinaryOperator;
+        swapPlusMinus(this.ctBinaryOperator);
+        MutationProject.testMutation(this.ctBinaryOperator);
+    }
 
-        // List<CtStatement> backup = new ArrayList<>(ctMethod.getBody().getStatements());
+    @Override
+    public void revertChanges() {
+        swapPlusMinus(this.ctBinaryOperator);
+    }
 
-        for(CtStatement st : ctMethod.getBody().getStatements()) {
-            st.getElements(e->true).forEach((e) -> {
-                if(e instanceof CtBinaryOperator) {
-                    CtBinaryOperator bo = (CtBinaryOperator) e;
-                    swapPlusMinus(bo);
-                    MutationProject.testMutation(ctMethod);
-                    swapPlusMinus(bo);
-                }
-            });
-        }
-
-        // MutationProject.testMutation(ctMethod);
-        // ctMethod.getBody().getStatements().addAll(backup);
+    @Override
+    public String getMutationDescription() {
+        return null;
     }
 }
