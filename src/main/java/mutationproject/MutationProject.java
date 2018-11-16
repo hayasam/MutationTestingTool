@@ -22,12 +22,20 @@ import java.util.*;
 public class MutationProject {
 
     private static StandardEnvironment env;
-    private static String currentFilePath, testProjectPath;
+    private static String currentFilePath, testProjectPath, mavenCommand;
+    private static File testProject;
     private static int mutationCount;
     private static List<String> survivingMutants;
 
-    public static void main(String[] args) { // TODO utiliser 2eme arg optionnel comme chemin vers maven
-        String projectPath = "../TEST_PROJECT_S9_SampleProject"; // TODO utiliser args
+    public static void main(String[] args) {
+
+        if(args.length == 0)
+        {
+            System.out.println("Please supply path to the Maven project in the program arguments");
+            System.exit(0);
+        }
+
+        String projectPath = args[0];
         File project = new File(projectPath);
         if(!project.exists()) {
             System.err.println("Error: directory " + projectPath + " does not exist!");
@@ -38,10 +46,19 @@ public class MutationProject {
             System.exit(1);
         }
 
+        if(args.length >= 2)
+        {
+            mavenCommand = args[1]; // TODO tester
+        }
+        else
+        {
+            mavenCommand = "mvn";
+        }
+
         // create a copy of the project, and make sure the directory doesn't already exist
 
         testProjectPath = projectPath + "_MutationTest";
-        File testProject = new File(testProjectPath);
+        testProject = new File(testProjectPath);
 
         while(testProject.exists()) {
             testProjectPath += "_";
@@ -64,6 +81,7 @@ public class MutationProject {
         String testProjectSrc = testProjectPath + "/src/main/java";
         if(!new File(testProjectSrc).exists()) {
             System.err.println("Error: directory " + testProjectSrc + " does not exist!");
+            deleteTestProject();
             System.exit(1);
         }
 
@@ -81,6 +99,7 @@ public class MutationProject {
                 } catch (IOException e) {
                     System.err.println("Something went wrong while reading file " + f.toAbsolutePath().toString());
                     e.printStackTrace();
+                    deleteTestProject();
                     System.exit(1);
                 }
 
@@ -98,12 +117,14 @@ public class MutationProject {
                 } catch (IOException e) {
                     System.err.println("Something went wrong while writing to " + currentFilePath);
                     e.printStackTrace();
+                    deleteTestProject();
                     System.exit(1);
                 }
             });
         } catch (IOException e) {
             System.err.println("Something went wrong while iterating over source files!");
             e.printStackTrace();
+            deleteTestProject();
             System.exit(1);
         }
 
@@ -122,8 +143,11 @@ public class MutationProject {
                 System.out.println("* " + s);
         }
 
-        // delete the mutated project
+        deleteTestProject();
+    }
 
+    private static void deleteTestProject()
+    {
         try {
             Files.walk(testProject.toPath())
                     .sorted(Comparator.reverseOrder())
@@ -148,12 +172,13 @@ public class MutationProject {
         } catch (IOException e) {
             System.err.println("Something went wrong while writing to " + currentFilePath);
             e.printStackTrace();
+            deleteTestProject();
             System.exit(1);
         }
 
         try
         {
-            ProcessBuilder ps = new ProcessBuilder("mvn","-f", testProjectPath, "clean", "compile", "test");
+            ProcessBuilder ps = new ProcessBuilder(mavenCommand,"-f", testProjectPath, "clean", "compile", "test");
             ps.redirectErrorStream(true);
             Process pr = ps.start();
             BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -172,6 +197,7 @@ public class MutationProject {
             if(!gotResults)
             {
                 System.err.println("Error: could not get tests results after running the command!");
+                deleteTestProject();
                 System.exit(1);
             }
 
@@ -189,6 +215,7 @@ public class MutationProject {
         } catch(Exception e) {
             System.err.println("Something went wrong while executing tests");
             e.printStackTrace();
+            deleteTestProject();
             System.exit(1);
         }
     }
