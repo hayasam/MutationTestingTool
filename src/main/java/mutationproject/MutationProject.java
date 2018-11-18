@@ -1,7 +1,7 @@
 package mutationproject;
 
+import mutation.*;
 import org.apache.commons.io.FileUtils;
-import processor.*;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtElement;
@@ -16,18 +16,21 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-public class MutationProject {
-
+public class MutationProject
+{
     private static StandardEnvironment env;
     private static String currentFilePath, testProjectPath, mavenCommand;
     private static File testProject;
     private static int mutationCount;
     private static List<String> survivingMutants;
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args)
+    {
         if(args.length == 0)
         {
             System.out.println("Please supply path to the Maven project in the program arguments");
@@ -35,15 +38,17 @@ public class MutationProject {
         }
 
         String projectPath = args[0];
-        while (projectPath.endsWith("\\") || projectPath.endsWith("/"))
+        while(projectPath.endsWith("\\") || projectPath.endsWith("/"))
             projectPath = projectPath.substring(0, projectPath.length() - 1);
 
         File project = new File(projectPath);
-        if(!project.exists()) {
+        if(!project.exists())
+        {
             System.err.println("Error: directory " + projectPath + " does not exist!");
             System.exit(1);
         }
-        if(!project.isDirectory()) {
+        if(!project.isDirectory())
+        {
             System.err.println("Error: " + projectPath + " is not a directory!");
             System.exit(1);
         }
@@ -138,11 +143,12 @@ public class MutationProject {
 
             SpoonAPI spoon = new Launcher();
             spoon.addInputResource(currentFilePath);
-            // spoon.addProcessor(new VoidMethodProcessor());
-            spoon.addProcessor(new PrimitiveTypeProcessor());
-            // spoon.addProcessor(new ObjectMethodProcessor());
-            // spoon.addProcessor(new PlusMinusProcessor());
-            // spoon.addProcessor(new AndOrProcessor());
+            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation));
+            spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
+            spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
+            spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));
+            spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation));
+            spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation));
             spoon.run();
 
             try {
@@ -187,7 +193,9 @@ public class MutationProject {
         }
     }
 
-    public static void testMutation(MutationProcessor processor, CtElement mutatedElement) {
+    public static <T extends CtElement> void testMutation(MutationOperator<T> operator, CtElement mutatedElement)
+    {
+        // TODO use processor.getFactory().Type().getAll() to get type?
         while(!(mutatedElement instanceof CtType) || !((CtType)mutatedElement).isTopLevel())
             mutatedElement = mutatedElement.getParent();
 
@@ -241,13 +249,11 @@ public class MutationProject {
                 if(substringIndex == -1)
                     substringIndex = currentFilePath.indexOf("/src/main/java/");
 
-                survivingMutants.add(processor.getMutationDescription() + " in file " + currentFilePath.substring(substringIndex + 15));
+                survivingMutants.add(operator.getMutationDescription() + " in file " + currentFilePath.substring(substringIndex + 15));
             }
 
             pr.waitFor();
             in.close();
-
-            processor.revertChanges();
 
         } catch(Exception e) {
             System.err.println("Something went wrong while executing tests");
