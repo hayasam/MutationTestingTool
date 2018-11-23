@@ -1,7 +1,7 @@
 package mutation;
 
+import mutationproject.MutationInfo;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -13,7 +13,7 @@ public class ReturnDefaultOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public ReturnDefaultOperator(BiConsumer<MutationOperator<CtMethod>, CtElement> mutationConsumer)
+    public ReturnDefaultOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
     {
         super(mutationConsumer);
     }
@@ -44,7 +44,7 @@ public class ReturnDefaultOperator extends MutationOperator<CtMethod>
      */
 
     @Override
-    protected void applyMutation(CtMethod ctMethod)
+    protected MutationInfo applyMutation(CtMethod ctMethod)
     {
         backup = new ArrayList<>(ctMethod.getBody().getStatements());
         ctMethod.getBody().getStatements().clear();
@@ -77,6 +77,8 @@ public class ReturnDefaultOperator extends MutationOperator<CtMethod>
                 ctMethod.getBody().addStatement(getFactory().<Boolean>createReturn().setReturnedExpression(getFactory().Code().createLiteral(false)));
                 break;
         }
+
+        return new MutationInfo("Empty body and return default value", ctMethod.getSimpleName());
     }
 
     @Override
@@ -85,11 +87,5 @@ public class ReturnDefaultOperator extends MutationOperator<CtMethod>
         List<CtStatement> statements = getMethod().getBody().getStatements();
         statements.clear();
         statements.addAll(backup);
-    }
-
-    @Override
-    public String getMutationDescription()
-    {
-        return "Remove body and return default value in method " + getMethod().getSimpleName();
     }
 }

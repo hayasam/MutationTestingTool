@@ -1,5 +1,6 @@
 package mutation;
 
+import mutationproject.MutationInfo;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -8,10 +9,10 @@ import java.util.function.BiConsumer;
 
 public abstract class MutationOperator<T extends CtElement> extends AbstractProcessor<T>
 {
-    private BiConsumer<MutationOperator<T>, CtElement> mutationConsumer;
+    private BiConsumer<MutationOperator<T>, MutationInfo> mutationConsumer;
     private CtMethod method;
 
-    public MutationOperator(BiConsumer<MutationOperator<T>, CtElement> mutationConsumer)
+    public MutationOperator(BiConsumer<MutationOperator<T>, MutationInfo> mutationConsumer)
     {
         this.mutationConsumer = mutationConsumer;
     }
@@ -40,15 +41,14 @@ public abstract class MutationOperator<T extends CtElement> extends AbstractProc
     @Override
     public void process(T element)
     {
-        applyMutation(element);
+        MutationInfo mutationInfo = applyMutation(element);
         if(mutationConsumer != null)
         {
-            mutationConsumer.accept(this, element);
+            mutationConsumer.accept(this, mutationInfo);
             revertMutation();
         }
     }
 
-    protected abstract void applyMutation(T element);
+    protected abstract MutationInfo applyMutation(T element);
     protected abstract void revertMutation(); // TODO tester
-    public abstract String getMutationDescription(); // TODO refactor
 }

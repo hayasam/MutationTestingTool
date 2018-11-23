@@ -1,10 +1,9 @@
 package mutation;
 
-import mutation.MutationOperator;
-import mutationproject.MutationProject;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
+import mutationproject.MutationInfo;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 
 import java.util.function.BiConsumer;
@@ -14,7 +13,7 @@ public class NegateExpressionOperator extends MutationOperator<CtExpression>
     private CtExpression expression;
     private CtUnaryOperator operator;
 
-    public NegateExpressionOperator(BiConsumer<MutationOperator<CtExpression>, CtElement> mutationConsumer)
+    public NegateExpressionOperator(BiConsumer<MutationOperator<CtExpression>, MutationInfo> mutationConsumer)
     {
         super(mutationConsumer);
     }
@@ -32,24 +31,19 @@ public class NegateExpressionOperator extends MutationOperator<CtExpression>
     }
 
     @Override
-    protected void applyMutation(CtExpression element)
+    protected MutationInfo applyMutation(CtExpression element)
     {
         expression = element;
         operator = new CtUnaryOperatorImpl();
         expression.replace(operator);
         operator.setKind(UnaryOperatorKind.NOT);
         operator.setOperand(expression);
+        return new MutationInfo("Negate boolean expression \"" + expression + "\"", getMethod().getSimpleName());
     }
 
     @Override
     protected void revertMutation()
     {
         operator.replace(expression);
-    }
-
-    @Override
-    public String getMutationDescription()
-    {
-        return String.format("Negate boolean expression %s in method %s", expression, getMethod().getSimpleName());
     }
 }

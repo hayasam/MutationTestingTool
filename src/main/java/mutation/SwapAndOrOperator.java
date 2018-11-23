@@ -1,8 +1,8 @@
 package mutation;
 
+import mutationproject.MutationInfo;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.declaration.CtElement;
 
 import java.util.function.BiConsumer;
 
@@ -10,7 +10,7 @@ public class SwapAndOrOperator extends MutationOperator<CtBinaryOperator>
 {
     private CtBinaryOperator binaryOperator;
 
-    public SwapAndOrOperator(BiConsumer<MutationOperator<CtBinaryOperator>, CtElement> mutationConsumer)
+    public SwapAndOrOperator(BiConsumer<MutationOperator<CtBinaryOperator>, MutationInfo> mutationConsumer)
     {
         super(mutationConsumer);
     }
@@ -37,22 +37,17 @@ public class SwapAndOrOperator extends MutationOperator<CtBinaryOperator>
     }
 
     @Override
-    protected void applyMutation(CtBinaryOperator element)
+    protected MutationInfo applyMutation(CtBinaryOperator element)
     {
         binaryOperator = element;
         swapAndOr(binaryOperator);
+        return new MutationInfo(String.format("Swap && and || between \"%s\" and \"%s\"",
+                binaryOperator.getLeftHandOperand(), binaryOperator.getRightHandOperand()), getMethod().getSimpleName());
     }
 
     @Override
     public void revertMutation()
     {
         swapAndOr(binaryOperator);
-    }
-
-    @Override
-    public String getMutationDescription()
-    {
-        return String.format("Swap && and || between %s and %s in method %s",
-                binaryOperator.getLeftHandOperand(), binaryOperator.getRightHandOperand(), getMethod().getSimpleName());
     }
 }

@@ -1,7 +1,7 @@
 package mutation;
 
+import mutationproject.MutationInfo;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class ReturnNullOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public ReturnNullOperator(BiConsumer<MutationOperator<CtMethod>, CtElement> mutationConsumer)
+    public ReturnNullOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
     {
         super(mutationConsumer);
     }
@@ -32,11 +32,12 @@ public class ReturnNullOperator extends MutationOperator<CtMethod>
     }
 
     @Override
-    protected void applyMutation(CtMethod ctMethod)
+    protected MutationInfo applyMutation(CtMethod ctMethod)
     {
         backup = new ArrayList<>(ctMethod.getBody().getStatements());
         ctMethod.getBody().getStatements().clear();
         ctMethod.getBody().addStatement(getFactory().createReturn().setReturnedExpression(getFactory().Code().createLiteral(null)));
+        return new MutationInfo("Empty body and return null", ctMethod.getSimpleName());
     }
 
     @Override
@@ -45,11 +46,5 @@ public class ReturnNullOperator extends MutationOperator<CtMethod>
         List<CtStatement> statements = getMethod().getBody().getStatements();
         statements.clear();
         statements.addAll(backup);
-    }
-
-    @Override
-    public String getMutationDescription()
-    {
-        return "Remove body and return null in method " + getMethod().getSimpleName();
     }
 }

@@ -1,7 +1,7 @@
 package mutation;
 
+import mutationproject.MutationInfo;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class EmptyVoidMethodOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public EmptyVoidMethodOperator(BiConsumer<MutationOperator<CtMethod>, CtElement> mutationConsumer)
+    public EmptyVoidMethodOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
     {
         super(mutationConsumer);
     }
@@ -30,21 +30,16 @@ public class EmptyVoidMethodOperator extends MutationOperator<CtMethod>
     }
 
     @Override
-    protected void applyMutation(CtMethod ctMethod)
+    protected MutationInfo applyMutation(CtMethod ctMethod)
     {
         backup = new ArrayList<>(ctMethod.getBody().getStatements());
         ctMethod.getBody().getStatements().clear();
+        return new MutationInfo("Empty method body", ctMethod.getSimpleName());
     }
 
     @Override
     protected void revertMutation()
     {
         getMethod().getBody().getStatements().addAll(backup);
-    }
-
-    @Override
-    public String getMutationDescription()
-    {
-        return "Remove body in void method " + getMethod().getSimpleName();
     }
 }

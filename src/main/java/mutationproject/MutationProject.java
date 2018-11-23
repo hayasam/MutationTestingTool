@@ -27,7 +27,7 @@ public class MutationProject
     private static String slash, currentFilePath, testProjectPath, mavenCommand;
     private static File testProject;
     private static int mutationCount;
-    private static List<String> survivingMutants;
+    private static List<MutationInfo> killedMutants, survivingMutants;
 
     public static void main(String[] args)
     {
@@ -112,6 +112,7 @@ public class MutationProject
         }
 
         mutationCount = 0;
+        killedMutants = new ArrayList<>();
         survivingMutants = new ArrayList<>();
 
         /* First list files, then process them. We are not processing files as we encounter them, because it prevents
@@ -172,9 +173,14 @@ public class MutationProject
         if(!survivingMutants.isEmpty())
         {
             System.out.println();
-            System.out.println("Surviving mutants list:");
-            for(String s : survivingMutants)
-                System.out.println("* " + s);
+            System.out.println("Surviving mutants:");
+            for(MutationInfo mutationInfo : survivingMutants)
+            {
+                System.out.println();
+                System.out.println("File: " + mutationInfo.getFilePath());
+                System.out.println("Method: " + mutationInfo.getMethodName());
+                System.out.println("Mutation: " + mutationInfo.getDescription());
+            }
         }
 
         deleteTestProject();
@@ -194,7 +200,7 @@ public class MutationProject
         }
     }
 
-    public static <T extends CtElement> void testMutation(MutationOperator<T> operator, CtElement mutatedElement) // TODO remove argument?
+    public static <T extends CtElement> void testMutation(MutationOperator<T> operator, MutationInfo mutationInfo)
     {
         DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
         printer.calculate(null, operator.getFactory().Type().getAll());
@@ -246,7 +252,8 @@ public class MutationProject
                 if(substringIndex == -1)
                     substringIndex = currentFilePath.indexOf("/src/main/java/");
 
-                survivingMutants.add(operator.getMutationDescription() + " in file " + currentFilePath.substring(substringIndex + 15));
+                mutationInfo.setFilePath(currentFilePath.substring(substringIndex + 15));
+                survivingMutants.add(mutationInfo);
             }
 
             pr.waitFor();
