@@ -246,13 +246,19 @@ public class MutationProject
             }
 
             ++mutationCount;
-            if(!hasFailures)
-            {
-                int substringIndex = currentFilePath.indexOf(slash + "src" + slash + "main" + slash + "java" + slash);
-                if(substringIndex == -1)
-                    substringIndex = currentFilePath.indexOf("/src/main/java/");
 
-                mutationInfo.setFilePath(currentFilePath.substring(substringIndex + 15));
+            int substringIndex = currentFilePath.indexOf(slash + "src" + slash + "main" + slash + "java" + slash);
+            if(substringIndex == -1)
+                substringIndex = currentFilePath.indexOf("/src/main/java/");
+
+            mutationInfo.setFilePath(currentFilePath.substring(substringIndex + 15));
+
+            if(hasFailures)
+            {
+                killedMutants.add(mutationInfo);
+            }
+            else
+            {
                 survivingMutants.add(mutationInfo);
             }
 
