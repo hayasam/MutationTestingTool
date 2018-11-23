@@ -145,11 +145,11 @@ public class MutationProject
             SpoonAPI spoon = new Launcher();
             spoon.addInputResource(currentFilePath);
             spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation));
-            spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
-            spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
-            spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));
-            spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation));
-            spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation));
+            //spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
+            //spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
+            //spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));
+            //spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation));
+            //spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation));
             spoon.run();
 
             try {
@@ -194,14 +194,10 @@ public class MutationProject
         }
     }
 
-    public static <T extends CtElement> void testMutation(MutationOperator<T> operator, CtElement mutatedElement)
+    public static <T extends CtElement> void testMutation(MutationOperator<T> operator, CtElement mutatedElement) // TODO remove argument?
     {
-        // TODO use processor.getFactory().Type().getAll() to get type?
-        while(!(mutatedElement instanceof CtType) || !((CtType)mutatedElement).isTopLevel())
-            mutatedElement = mutatedElement.getParent();
-
         DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
-        printer.calculate(null, Collections.singletonList((CtType<?>) mutatedElement));
+        printer.calculate(null, operator.getFactory().Type().getAll());
 
         try {
             Files.write(Paths.get(currentFilePath), printer.getResult().getBytes());

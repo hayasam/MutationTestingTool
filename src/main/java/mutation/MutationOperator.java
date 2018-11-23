@@ -30,14 +30,9 @@ public abstract class MutationOperator<T extends CtElement> extends AbstractProc
 
         if(element != null)
         {
-            // TODO use getFactory().Method().getMainMethods() to check for main method?
             method = (CtMethod)element;
-            return !(method.getSimpleName().equals("main") && method.isStatic()) // not static main method
+            return !getFactory().Method().getMainMethods().contains(method) // not main method
                 && !method.isAbstract(); // method with a body
-
-            /* TODO find a better way to check for tests (not depending on junit version)
-            method.getAnnotation(org.junit.Test.class) == null; // not a Test
-             */
         }
         return false;
     }
