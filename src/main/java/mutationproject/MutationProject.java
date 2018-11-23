@@ -24,7 +24,7 @@ import java.util.List;
 public class MutationProject
 {
     private static StandardEnvironment env;
-    private static String currentFilePath, testProjectPath, mavenCommand;
+    private static String slash, currentFilePath, testProjectPath, mavenCommand;
     private static File testProject;
     private static int mutationCount;
     private static List<String> survivingMutants;
@@ -38,7 +38,8 @@ public class MutationProject
         }
 
         String projectPath = args[0];
-        while(projectPath.endsWith("\\") || projectPath.endsWith("/"))
+        slash = projectPath.contains("/") ? "/" : "\\";
+        while(projectPath.endsWith(slash))
             projectPath = projectPath.substring(0, projectPath.length() - 1);
 
         File project = new File(projectPath);
@@ -53,7 +54,7 @@ public class MutationProject
             System.exit(1);
         }
 
-        File projectSrc = new File(projectPath + "\\src"), projectPom = new File(projectPath + "\\pom.xml");
+        File projectSrc = new File(projectPath + slash + "src"), projectPom = new File(projectPath + slash + "pom.xml");
         if(!projectSrc.exists())
         {
             System.err.println("Error: " + projectPath + " does not have a src directory!");
@@ -90,8 +91,8 @@ public class MutationProject
                 System.err.println("Error: could not create test project directory!");
                 System.exit(1);
             }
-            FileUtils.copyDirectory(projectSrc, new File(testProjectPath + "\\src"));
-            FileUtils.copyFile(projectPom, new File(testProjectPath + "\\pom.xml"));
+            FileUtils.copyDirectory(projectSrc, new File(testProjectPath + slash + "src"));
+            FileUtils.copyFile(projectPom, new File(testProjectPath + slash + "pom.xml"));
         } catch (IOException e) {
             System.err.println("Something went wrong while copying the project!");
             e.printStackTrace();
@@ -103,7 +104,7 @@ public class MutationProject
         env.setComplianceLevel(8);
         env.useTabulations(true);
 
-        String testProjectSrc = testProjectPath + "\\src\\main\\java";
+        String testProjectSrc = testProjectPath + slash + "src" + slash + "main" + slash + "java";
         if(!new File(testProjectSrc).exists()) {
             System.err.println("Error: directory " + testProjectSrc + " does not exist!");
             deleteTestProject();
@@ -245,7 +246,7 @@ public class MutationProject
             ++mutationCount;
             if(!hasFailures)
             {
-                int substringIndex = currentFilePath.indexOf("\\src\\main\\java\\");
+                int substringIndex = currentFilePath.indexOf(slash + "src" + slash + "main" + slash + "java" + slash);
                 if(substringIndex == -1)
                     substringIndex = currentFilePath.indexOf("/src/main/java/");
 
