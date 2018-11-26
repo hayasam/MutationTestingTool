@@ -43,4 +43,10 @@ class EmptyVoidMethodOperatorTest
     {
         assertEquals(0, type.getMethod("subtractFromCounter", type.getFactory().Type().integerPrimitiveType()).getBody().getStatements().size());
     }
+    @Test
+    void testRevert() throws IOException
+    {
+        CtType<?> type = TestUtils.mutateTestClass(new EmptyVoidMethodOperator(null, true));
+        assertEquals(TestUtils.getOriginalClassContent(), type.toString());
+    }
 }

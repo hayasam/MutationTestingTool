@@ -42,4 +42,10 @@ class SwapAndOrOperatorTest
         assertEquals(1, method.getBody().getStatements().size());
         assertEquals("return ((counter) > 10) && ((counter) < (-10))", method.getBody().getStatements().get(0).toString());
     }
+    @Test
+    void testRevert() throws IOException
+    {
+        CtType<?> type = TestUtils.mutateTestClass(new SwapAndOrOperator(null, true));
+        assertEquals(TestUtils.getOriginalClassContent(), type.toString());
+    }
 }
