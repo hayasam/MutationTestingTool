@@ -276,7 +276,7 @@ public class MutationProject
                 String propertyValue = prop.getProperty(propertyName);
                 if(propertyValue.trim().startsWith("1")) {
                     switch(propertyName) {
-                        // case "conditional" : spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation)); break;
+                        case "conditional" : spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation)); break;
                         case "void" : spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation)); break;
                         case "negate" : spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation)); break;
                         case "default" : spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation)); break;
@@ -288,6 +288,7 @@ public class MutationProject
             }
         } catch (IOException e) {
             System.err.println("Warning: could not retrieve the config.properties file. All mutation operators will be used by default.");
+            spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation));
             spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation));
             spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
             spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));

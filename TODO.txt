@@ -1,21 +1,6 @@
 > Tester revertMutation
-> Choisir operateur de mutation (fichier de config)
 > HTML
 > Documentation pour comment utiliser l'outil
 
 > (Rajouter mutations simples http://pitest.org/quickstart/mutators/
 	i.e. Conditionals Boundary Mutator / Increments Mutator)
-
-B pour Boundary
-O pour null
-I pour Increments
-N pour negate
-
-D return default
-O return null
-N negate
-A andOr
-P plusMinus
-V vide la méthode
-
-
