@@ -1,10 +1,9 @@
-<<<<<<< HEAD
-> Tester revertMutation
-=======
-> Choisir operateur de mutation (fichier de config)
->>>>>>> 61879012c9b2e9aec77cd865af9c63b032fd60e2
-> HTML
+> Rapport de test (HTML)
 > Documentation pour comment utiliser l'outil
-
+> Rapport de projet 5 pages
 > (Rajouter mutations simples http://pitest.org/quickstart/mutators/
-	i.e. Conditionals Boundary Mutator / Increments Mutator)
+	i.e.  Increments Mutator
+> Tester ConditionalBoundaryOperator (& Increments)
+
+
+
