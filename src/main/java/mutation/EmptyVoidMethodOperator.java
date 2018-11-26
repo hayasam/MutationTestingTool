@@ -12,9 +12,9 @@ public class EmptyVoidMethodOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public EmptyVoidMethodOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
+    public EmptyVoidMethodOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override

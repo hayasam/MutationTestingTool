@@ -276,25 +276,26 @@ public class MutationProject
                 String propertyValue = prop.getProperty(propertyName);
                 if(propertyValue.trim().startsWith("1")) {
                     switch(propertyName) {
-                        case "conditional" : spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation)); break;
-                        case "void" : spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation)); break;
-                        case "negate" : spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation)); break;
-                        case "default" : spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation)); break;
-                        case "null" : spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation)); break;
-                        case "swapAndOr" : spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation)); break;
-                        case "swapPlusMinus" : spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation)); break;
+                        case "conditional" : spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation, true)); break;
+                        case "void" : spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true)); break;
+                        case "negate" : spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation, true)); break;
+                        case "default" : spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation, true)); break;
+                        case "null" : spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation, true)); break;
+                        case "swapAndOr" : spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation, true)); break;
+                        case "swapPlusMinus" : spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation, true)); break;
+
                     }
                 }
             }
         } catch (IOException e) {
             System.err.println("Warning: could not retrieve the config.properties file. All mutation operators will be used by default.");
-            spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation));
-            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation));
-            spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
-            spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
-            spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));
-            spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation));
-            spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation));
+            spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation, true));
         }
 
     }

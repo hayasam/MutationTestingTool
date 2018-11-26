@@ -12,9 +12,9 @@ public class ReturnNullOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public ReturnNullOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
+    public ReturnNullOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override

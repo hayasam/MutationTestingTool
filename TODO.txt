@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 > Tester revertMutation
+=======
+> Choisir operateur de mutation (fichier de config)
+>>>>>>> 61879012c9b2e9aec77cd865af9c63b032fd60e2
 > HTML
 > Documentation pour comment utiliser l'outil
 

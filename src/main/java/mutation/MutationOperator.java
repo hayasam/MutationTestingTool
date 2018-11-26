@@ -11,10 +11,12 @@ public abstract class MutationOperator<T extends CtElement> extends AbstractProc
 {
     private BiConsumer<MutationOperator<T>, MutationInfo> mutationConsumer;
     private CtMethod method;
+    private boolean revertAfterChange;
 
-    public MutationOperator(BiConsumer<MutationOperator<T>, MutationInfo> mutationConsumer)
+    public MutationOperator(BiConsumer<MutationOperator<T>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
         this.mutationConsumer = mutationConsumer;
+        this.revertAfterChange = revertAfterChange;
     }
 
     protected CtMethod getMethod()
@@ -43,10 +45,10 @@ public abstract class MutationOperator<T extends CtElement> extends AbstractProc
     {
         MutationInfo mutationInfo = applyMutation(element);
         if(mutationConsumer != null)
-        {
             mutationConsumer.accept(this, mutationInfo);
+
+        if(revertAfterChange)
             revertMutation();
-        }
     }
 
     protected abstract MutationInfo applyMutation(T element);

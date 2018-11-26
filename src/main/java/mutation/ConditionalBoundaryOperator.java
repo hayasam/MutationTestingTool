@@ -10,9 +10,9 @@ public class ConditionalBoundaryOperator extends MutationOperator<CtBinaryOperat
 {
     private CtBinaryOperator binaryOperator;
 
-    public ConditionalBoundaryOperator(BiConsumer<MutationOperator<CtBinaryOperator>, MutationInfo> mutationConsumer)
+    public ConditionalBoundaryOperator(BiConsumer<MutationOperator<CtBinaryOperator>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override

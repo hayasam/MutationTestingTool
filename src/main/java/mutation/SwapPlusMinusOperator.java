@@ -10,9 +10,9 @@ public class SwapPlusMinusOperator extends MutationOperator<CtBinaryOperator>
 {
     private CtBinaryOperator binaryOperator;
 
-    public SwapPlusMinusOperator(BiConsumer<MutationOperator<CtBinaryOperator>, MutationInfo> mutationConsumer)
+    public SwapPlusMinusOperator(BiConsumer<MutationOperator<CtBinaryOperator>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override
