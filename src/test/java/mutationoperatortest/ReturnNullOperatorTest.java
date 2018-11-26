@@ -35,4 +35,10 @@ class ReturnNullOperatorTest
         assertEquals(1, method.getBody().getStatements().size());
         assertEquals("return null", method.getBody().getStatements().get(0).toString());
     }
+    @Test
+    void testRevert() throws IOException
+    {
+        CtType<?> type = TestUtils.mutateTestClass(new ReturnNullOperator(null, true));
+        assertEquals(TestUtils.getOriginalClassContent(), type.toString());
+    }
 }
