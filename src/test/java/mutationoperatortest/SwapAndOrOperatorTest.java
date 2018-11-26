@@ -19,14 +19,14 @@ class SwapAndOrOperatorTest
     @BeforeAll
     static void setup() throws IOException
     {
-        type = TestUtils.mutateTestClass(new SwapAndOrOperator(null));
+        type = TestUtils.mutateTestClass(new SwapAndOrOperator(null, false));
     }
     @ParameterizedTest
     @ValueSource(strings = {"incrementCounter", "addToCounter", "subtractFromCounter", "getCounter", "getCounterObject", "isCounterHigh", "abstractMethod", "main"})
     void testUnchangedMethods(String methodName)
     {
         CtMethod method = type.getMethodsByName(methodName).get(0);
-        assertEquals(TestUtils.getOriginalContent(methodName), method.toString());
+        assertEquals(TestUtils.getOriginalMethodContent(methodName), method.toString());
     }
     @Test
     void testMutationIsCounterCloseToZero()

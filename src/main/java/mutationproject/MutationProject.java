@@ -145,7 +145,7 @@ public class MutationProject
 
             SpoonAPI spoon = new Launcher();
             spoon.addInputResource(currentFilePath);
-            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation));
+            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true));
             //spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
             //spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
             //spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));

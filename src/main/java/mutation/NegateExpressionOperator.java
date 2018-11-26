@@ -13,9 +13,9 @@ public class NegateExpressionOperator extends MutationOperator<CtExpression>
     private CtExpression expression;
     private CtUnaryOperator operator;
 
-    public NegateExpressionOperator(BiConsumer<MutationOperator<CtExpression>, MutationInfo> mutationConsumer)
+    public NegateExpressionOperator(BiConsumer<MutationOperator<CtExpression>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override

@@ -13,9 +13,9 @@ public class ReturnDefaultOperator extends MutationOperator<CtMethod>
 {
     private List<CtStatement> backup;
 
-    public ReturnDefaultOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer)
+    public ReturnDefaultOperator(BiConsumer<MutationOperator<CtMethod>, MutationInfo> mutationConsumer, boolean revertAfterChange)
     {
-        super(mutationConsumer);
+        super(mutationConsumer, revertAfterChange);
     }
 
     @Override

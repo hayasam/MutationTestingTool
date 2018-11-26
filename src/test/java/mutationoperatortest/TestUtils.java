@@ -1,6 +1,5 @@
 package mutationoperatortest;
 
-import mutation.EmptyVoidMethodOperator;
 import mutation.MutationOperator;
 import spoon.Launcher;
 import spoon.compiler.SpoonResource;
@@ -17,9 +16,10 @@ import java.util.Map;
 
 public class TestUtils
 {
+    private static String originalClassContent;
     private static Map<String, String> originalMethodContent;
 
-    public static CtType<?> mutateTestClass(MutationOperator<?> mutationOperator) throws IOException
+    private static SpoonResource loadTestFile() throws IOException
     {
         InputStream in = TestUtils.class.getResourceAsStream("/TestClass.java");
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -30,26 +30,40 @@ public class TestUtils
             fileContent.append(line);
             fileContent.append(System.lineSeparator());
         }
-        SpoonResource testFile = new VirtualFile(fileContent.toString());
+        return new VirtualFile(fileContent.toString());
+    }
 
-        // get original content for each method
+    public static CtType<?> mutateTestClass(MutationOperator<?> mutationOperator) throws IOException
+    {
+        SpoonResource testFile = loadTestFile();
         Launcher spoon = new Launcher();
         spoon.addInputResource(testFile);
-        spoon.run();
-        CtType<?> type = spoon.getFactory().Type().getAll().get(0);
-        originalMethodContent = new HashMap<>();
-        for(CtMethod method : type.getMethods())
-            originalMethodContent.put(method.getSimpleName(), method.toString());
+
+        if(originalClassContent == null)
+        {
+            // get original content for each method
+            spoon.run();
+            CtType<?> type = spoon.getFactory().Type().getAll().get(0);
+            originalClassContent = type.toString();
+            originalMethodContent = new HashMap<>();
+            for(CtMethod method : type.getMethods())
+                originalMethodContent.put(method.getSimpleName(), method.toString());
+            spoon = new Launcher();
+            spoon.addInputResource(testFile);
+        }
 
         // create a new model with the mutations
-        spoon = new Launcher();
-        spoon.addInputResource(testFile);
         spoon.addProcessor(mutationOperator);
         spoon.run();
         return spoon.getFactory().Type().getAll().get(0);
     }
 
-    public static String getOriginalContent(String methodName)
+    public static String getOriginalClassContent()
+    {
+        return originalClassContent;
+    }
+
+    public static String getOriginalMethodContent(String methodName)
     {
         return originalMethodContent.get(methodName);
     }
