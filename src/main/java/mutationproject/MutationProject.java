@@ -1,5 +1,6 @@
 package mutationproject;
 
+import com.fasterxml.jackson.databind.PropertyName;
 import mutation.*;
 import org.apache.commons.io.FileUtils;
 import spoon.Launcher;
@@ -9,17 +10,11 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.StandardEnvironment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class MutationProject
 {
@@ -145,12 +140,10 @@ public class MutationProject
 
             SpoonAPI spoon = new Launcher();
             spoon.addInputResource(currentFilePath);
-            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true));
-            //spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation));
-            //spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation));
-            //spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation));
-            //spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation));
-            //spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation));
+
+            // Retrieve enabled processors from property file and add them to spoon
+            addMutationOperators(spoon);
+
             spoon.run();
 
             try {
@@ -271,5 +264,37 @@ public class MutationProject
             deleteTestProject();
             System.exit(1);
         }
+    }
+
+    private static void addMutationOperators(SpoonAPI spoon) {
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream("./config.properties"));
+            Enumeration<?> enumeration = prop.propertyNames();
+            while(enumeration.hasMoreElements()) {
+                String propertyName = enumeration.nextElement().toString();
+                String propertyValue = prop.getProperty(propertyName);
+                if(propertyValue.trim().startsWith("1")) {
+                    switch(propertyName) {
+                        // case "conditional" : spoon.addProcessor(new ConditionalBoundaryOperator(MutationProject::testMutation)); break;
+                        case "void" : spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true)); break;
+                        case "negate" : spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation, true)); break;
+                        case "default" : spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation, true)); break;
+                        case "null" : spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation, true)); break;
+                        case "swapAndOr" : spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation, true)); break;
+                        case "swapPlusMinus" : spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation, true)); break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Warning: could not retrieve the config.properties file. All mutation operators will be used by default.");
+            spoon.addProcessor(new EmptyVoidMethodOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new ReturnDefaultOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new ReturnNullOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new NegateExpressionOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new SwapPlusMinusOperator(MutationProject::testMutation, true));
+            spoon.addProcessor(new SwapAndOrOperator(MutationProject::testMutation, true));
+        }
+
     }
 }

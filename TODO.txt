@@ -1,28 +1,20 @@
-// TODO
+> Choisir operateur de mutation (fichier de config)
+> HTML
+> Documentation pour comment utiliser l'outil
 
-Idée :
-Copier tout le dossier du projet
-Parcourir récursivement le dossier copié, à chaque fois qu'on trouve un .java :
-    sauvegarder son contenu
-    l'ajouter en input resource
-    à chaque fois qu'un processor s'exécute :
-        écraser le fichier avec code modifié
-        exécuter les tests
-    remettre le contenu d'origine
+> (Rajouter mutations simples http://pitest.org/quickstart/mutators/
+	i.e. Conditionals Boundary Mutator / Increments Mutator)
 
+B pour Boundary
+O pour null
+I pour Increments
+N pour negate
 
-1. Créer classe pour le projet, avec méthode statique pour lancer les mutations sur un projet
-2. Outil doit cloner le projet voulu dans un autre dossier, en modifiant à chaque fois 1 chose dans 1 fichier
-3. Faire un programme Java à qui on passe le chemin vers le projet en argument
-
-4. Faire la compilation 
-
-5. Commencer par lancer les tests en manuel (mvn test)
-
-6. Exécution des tests de façon automatique
+D return default
+O return null
+N negate
+A andOr
+P plusMinus
+V vide la méthode
 
 
-> A la fin de la méthode process, annuler les mutations
-
-Outils / Infos : 
-https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/support/JavaOutputProcessor.java
