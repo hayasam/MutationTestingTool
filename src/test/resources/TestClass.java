@@ -1,3 +1,4 @@
+/* Class used to run tests for mutation operators */
 public abstract class TestClass
 {
     private int counter;
@@ -46,6 +47,11 @@ public abstract class TestClass
     public boolean isCounterFarFromZero()
     {
         return counter > 10 || counter < -10;
+    }
+
+    public boolean isCounterVeryFarFromZero()
+    {
+        return counter >= 100 || counter <= -100;
     }
 
     public abstract void abstractMethod();

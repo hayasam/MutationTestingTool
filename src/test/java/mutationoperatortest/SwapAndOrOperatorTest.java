@@ -43,6 +43,13 @@ class SwapAndOrOperatorTest
         assertEquals("return ((counter) > 10) && ((counter) < (-10))", method.getBody().getStatements().get(0).toString());
     }
     @Test
+    void testMutationIsCounterVeryFarFromZero()
+    {
+        CtMethod method = type.getMethod("isCounterVeryFarFromZero");
+        assertEquals(1, method.getBody().getStatements().size());
+        assertEquals("return ((counter) >= 100) && ((counter) <= (-100))", method.getBody().getStatements().get(0).toString());
+    }
+    @Test
     void testRevert() throws IOException
     {
         CtType<?> type = TestUtils.mutateTestClass(new SwapAndOrOperator(null, true));

@@ -22,7 +22,7 @@ class ReturnNullOperatorTest
         type = TestUtils.mutateTestClass(new ReturnNullOperator(null, false));
     }
     @ParameterizedTest
-    @ValueSource(strings = {"incrementCounter", "addToCounter", "subtractFromCounter", "getCounter", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "abstractMethod", "main"})
+    @ValueSource(strings = {"incrementCounter", "addToCounter", "subtractFromCounter", "getCounter", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "isCounterVeryFarFromZero", "abstractMethod", "main"})
     void testUnchangedMethods(String methodName)
     {
         CtMethod method = type.getMethodsByName(methodName).get(0);

@@ -1,6 +1,6 @@
 package mutationoperatortest;
 
-import mutation.NegateExpressionOperator;
+import mutation.ConditionalBoundaryOperator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,14 +12,14 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class NegateExpressionOperatorTest
+class ConditionalBoundaryOperatorTest
 {
     private static CtType<?> type;
 
     @BeforeAll
     static void setup() throws IOException
     {
-        type = TestUtils.mutateTestClass(new NegateExpressionOperator(null, false));
+        type = TestUtils.mutateTestClass(new ConditionalBoundaryOperator(null, false));
     }
     @ParameterizedTest
     @ValueSource(strings = {"incrementCounter", "addToCounter", "subtractFromCounter", "getCounter", "getCounterObject", "abstractMethod", "main"})
@@ -33,33 +33,33 @@ class NegateExpressionOperatorTest
     {
         CtMethod method = type.getMethod("isCounterHigh");
         assertEquals(1, method.getBody().getStatements().size());
-        assertEquals("return !((counter) > 10)", method.getBody().getStatements().get(0).toString());
+        assertEquals("return (counter) >= 10", method.getBody().getStatements().get(0).toString());
     }
     @Test
     void testMutationIsCounterCloseToZero()
     {
         CtMethod method = type.getMethod("isCounterCloseToZero");
         assertEquals(1, method.getBody().getStatements().size());
-        assertEquals("return !((!((counter) < 5)) && (!((counter) > (-5))))", method.getBody().getStatements().get(0).toString());
+        assertEquals("return ((counter) <= 5) && ((counter) >= (-5))", method.getBody().getStatements().get(0).toString());
     }
     @Test
     void testMutationIsCounterFarFromZero()
     {
         CtMethod method = type.getMethod("isCounterFarFromZero");
         assertEquals(1, method.getBody().getStatements().size());
-        assertEquals("return !((!((counter) > 10)) || (!((counter) < (-10))))", method.getBody().getStatements().get(0).toString());
+        assertEquals("return ((counter) >= 10) || ((counter) <= (-10))", method.getBody().getStatements().get(0).toString());
     }
     @Test
     void testMutationIsCounterVeryFarFromZero()
     {
         CtMethod method = type.getMethod("isCounterVeryFarFromZero");
         assertEquals(1, method.getBody().getStatements().size());
-        assertEquals("return !((!((counter) >= 100)) || (!((counter) <= (-100))))", method.getBody().getStatements().get(0).toString());
+        assertEquals("return ((counter) > 100) || ((counter) < (-100))", method.getBody().getStatements().get(0).toString());
     }
     @Test
     void testRevert() throws IOException
     {
-        CtType<?> type = TestUtils.mutateTestClass(new NegateExpressionOperator(null, true));
+        CtType<?> type = TestUtils.mutateTestClass(new ConditionalBoundaryOperator(null, true));
         assertEquals(TestUtils.getOriginalClassContent(), type.toString());
     }
 }

@@ -22,7 +22,7 @@ class EmptyVoidMethodOperatorTest
         type = TestUtils.mutateTestClass(new EmptyVoidMethodOperator(null, false));
     }
     @ParameterizedTest
-    @ValueSource(strings = {"getCounter", "getCounterObject", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "abstractMethod", "main"})
+    @ValueSource(strings = {"getCounter", "getCounterObject", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "isCounterVeryFarFromZero", "abstractMethod", "main"})
     void testUnchangedMethods(String methodName)
     {
         CtMethod method = type.getMethodsByName(methodName).get(0);

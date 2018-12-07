@@ -57,6 +57,13 @@ class ReturnDefaultOperatorTest
         assertEquals("return false", method.getBody().getStatements().get(0).toString());
     }
     @Test
+    void testMutationIsCounterVeryFarFromZero()
+    {
+        CtMethod method = type.getMethod("isCounterVeryFarFromZero");
+        assertEquals(1, method.getBody().getStatements().size());
+        assertEquals("return false", method.getBody().getStatements().get(0).toString());
+    }
+    @Test
     void testRevert() throws IOException
     {
         CtType<?> type = TestUtils.mutateTestClass(new ReturnDefaultOperator(null, true));
