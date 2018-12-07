@@ -1,0 +1,39 @@
+Mutation Testing Tool Documentation
+
+What can I do with this tool?
+
+The Mutation Testing tool allows you to test the completeness of your own tests. It will apply various mutations to your project source code and run your test suite for each mutation. 
+
+If a mutant survives (a test passes after the mutation is applied), then this test is not well-written and you should rewrite it. If a mutant doesn't survive (the test fails), this does not mean the test is valid but at least, it passes against numerous edge cases. This tool helps you invalidate tests that were poorly written.
+
+How do I use the tool?
+
+- Use a Maven project structure for the project to test
+	i.e. src/main/java/* for the source code src/test/* for the tests
+- Edit the configuration file (config.properties) to apply specific mutations (by default all mutations are tested)
+- Call the mutation testing tool using the .jar with one argument : the path of the project folder
+	i.e. java mutation_tool.jar "/home-reseau/Documents/MyProject"
+- Retrieve the test report in the index.html generated at your root folder
+
+What mutations can I apply to my source code?
+
+The following mutations can be applied to your project in order to verify your tests:
+	- Conditional expressions (mutates the value of conditional expression)
+		if (a < 3) --> if (a <= 3)
+		if (a <= 3) --> if (a < 3)
+	- Void methods (empty the body of void methods)
+		void compute() { doSomething(); } --> void compute() { }
+	- Conditional negation (negate boolean expressions)
+		boolean valid = a || b; --> boolean valid = !(a || b);
+	- Default returned value (when returning a primitive type value from a method)
+		int getX() { return x; } --> int getX() { return 0; }
+	- Null default returned value (when returning an Object from a method)
+		List getList() { return myList; } --> List getList() { return null; }
+	- AND(&&) and OR(||) operator swaps
+		boolean valid = a || b; --> boolean valid = a && b;
+	- + and - operator swaps
+		int c = b + 2; --> int c = b - 2;
+
+How does it work? (élaborer)
+
+

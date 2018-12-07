@@ -36,13 +36,21 @@ public class SwapAndOrOperator extends MutationOperator<CtBinaryOperator>
             bo.setKind(BinaryOperatorKind.AND);
     }
 
+    private static String getOperatorString(CtBinaryOperator bo)
+    {
+        if(bo.getKind() == BinaryOperatorKind.AND) return "&&";
+        return "||";
+    }
+
     @Override
     protected MutationInfo applyMutation(CtBinaryOperator element)
     {
         binaryOperator = element;
+        String prevOperator = getOperatorString(binaryOperator);
         swapAndOr(binaryOperator);
-        return new MutationInfo(String.format("Swap && and || between \"%s\" and \"%s\"",
-                binaryOperator.getLeftHandOperand(), binaryOperator.getRightHandOperand()), getMethod().getSimpleName());
+        return new MutationInfo(String.format("Replaced %s with %s between \"%s\" and \"%s\"",
+                prevOperator, getOperatorString(binaryOperator), binaryOperator.getLeftHandOperand(),
+                binaryOperator.getRightHandOperand()), getMethod().getSimpleName());
     }
 
     @Override

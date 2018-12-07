@@ -26,6 +26,8 @@ public class MutationProject
 
     public static void main(String[] args)
     {
+        long startTime = System.currentTimeMillis();
+
         if(args.length == 0)
         {
             System.out.println("Please supply path to the Maven project in the program arguments");
@@ -156,27 +158,55 @@ public class MutationProject
             }
         }
 
+        deleteTestProject();
+
         // print results
 
-        System.out.println();
-        System.out.println("--------- MUTATION TESTING RESULTS ---------");
-        System.out.println();
-        System.out.println("Created mutants: " + mutationCount);
-        System.out.println("Surviving mutants: " + survivingMutants.size() + " (" + (Math.floor(survivingMutants.size() * 10000.0 / mutationCount) / 100) + "%)");
-        if(!survivingMutants.isEmpty())
-        {
-            System.out.println();
-            System.out.println("Surviving mutants:");
-            for(MutationInfo mutationInfo : survivingMutants)
-            {
-                System.out.println();
-                System.out.println("File: " + mutationInfo.getFilePath());
-                System.out.println("Method: " + mutationInfo.getMethodName());
-                System.out.println("Mutation: " + mutationInfo.getDescription());
-            }
-        }
+        try {
+            PrintWriter writer = new PrintWriter("mutation_testing_report.html", "UTF-8");
+            writer.print("<!doctype html><html lang='en'><head><meta charset='utf-8'><title>MUTATION TEST REPORT</title>" +
+                    "<style>table, th, td {border: 1px solid black;}table {border-collapse: collapse;width:80%;}" +
+                    ".center {text-align: center;}th {background-color: #cccccc;}</style></head><body><h1>" +
+                    "MUTATION TESTING RESULTS</h1>" +
+                    "<h2>Summary</h2><table class='center'><tr><th>Mutations</th><th>Surviving Mutants</th><th>" +
+                    "Killed Mutants</th><th>Success Rate</th><th>Time (s)</th></tr><tr><td>");
+            writer.print(mutationCount);
+            writer.print("</td><td>");
+            writer.print(survivingMutants.size());
+            writer.print("</td><td>");
+            writer.print(killedMutants.size());
+            writer.print("</td><td>");
+            writer.print((Math.floor(killedMutants.size() * 10000.0 / mutationCount) / 100) + "%");
+            writer.print("</td><td>");
+            writer.print(String.format("%.2f", (System.currentTimeMillis() - startTime) * 0.001));
+            writer.print("</td></tr></table><h2 style='color:red;'>Surviving Mutants</h2><table><tr><th>File</th>" +
+                    "<th>Method</th><th>Description</th></tr>");
+            printMutationInfo(writer, survivingMutants);
+            writer.print("</table><h2 style='color:green;'>Killed Mutants</h2><table><tr><th>File</th><th>Method</th>" +
+                "<th>Description</th></tr>");
+            printMutationInfo(writer, killedMutants);
+            writer.println("</table></body></html>");
+            writer.close();
 
-        deleteTestProject();
+        } catch (Exception e) {
+            System.err.println("Something went wrong while writing test results");
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private static void printMutationInfo(PrintWriter writer, List<MutationInfo> list)
+    {
+        for(MutationInfo mutationInfo : list)
+        {
+            writer.print("<tr><td>");
+            writer.print(mutationInfo.getFilePath());
+            writer.print("</td><td>");
+            writer.print(mutationInfo.getMethodName());
+            writer.print("</td><td>");
+            writer.print(mutationInfo.getDescription());
+            writer.print("</td></tr>");
+        }
     }
 
     private static void deleteTestProject()

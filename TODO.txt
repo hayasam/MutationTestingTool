@@ -1,9 +1,6 @@
 > Rapport de test (HTML)
 > Documentation pour comment utiliser l'outil
-> Rapport de projet 5 pages
-> (Rajouter mutations simples http://pitest.org/quickstart/mutators/
-	i.e.  Increments Mutator
-> Tester ConditionalBoundaryOperator (& Increments)
+> Tester ConditionalBoundaryOperator
 
 
 

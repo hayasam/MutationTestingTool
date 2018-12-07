@@ -25,7 +25,8 @@ public class ConditionalBoundaryOperator extends MutationOperator<CtBinaryOperat
     public boolean isToBeProcessed(CtBinaryOperator candidate)
     {
         return super.isToBeProcessed(candidate) &&
-                (candidate.getKind() == BinaryOperatorKind.PLUS || candidate.getKind() == BinaryOperatorKind.MINUS);
+                (candidate.getKind() == BinaryOperatorKind.LT || candidate.getKind() == BinaryOperatorKind.LE ||
+                candidate.getKind() == BinaryOperatorKind.GT || candidate.getKind() == BinaryOperatorKind.GE);
     }
 
     private static void swapConditionalsBoundary(CtBinaryOperator bo)
@@ -36,12 +37,22 @@ public class ConditionalBoundaryOperator extends MutationOperator<CtBinaryOperat
         else if(bo.getKind() == BinaryOperatorKind.GE) bo.setKind(BinaryOperatorKind.GT);
     }
 
+    private static String getOperatorString(CtBinaryOperator bo)
+    {
+        if(bo.getKind() == BinaryOperatorKind.LT) return "<";
+        else if(bo.getKind() == BinaryOperatorKind.LE) return "<=";
+        else if(bo.getKind() == BinaryOperatorKind.GT) return ">";
+        return ">=";
+    }
+
     @Override
     protected MutationInfo applyMutation(CtBinaryOperator element)
     {
         binaryOperator = element;
+        String prevOperator = getOperatorString(binaryOperator);
         swapConditionalsBoundary(binaryOperator);
-        return new MutationInfo(String.format("Swap (< and <=) or (> and >=) between \"%s\" and \"%s\"", binaryOperator.getLeftHandOperand(),
+        return new MutationInfo(String.format("Replaced %s with %s between \"%s\" and \"%s\"",
+                prevOperator, getOperatorString(binaryOperator), binaryOperator.getLeftHandOperand(),
                 binaryOperator.getRightHandOperand()), getMethod().getSimpleName());
     }
 
