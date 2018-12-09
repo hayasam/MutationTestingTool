@@ -23,36 +23,36 @@ The test report `mutation_testing_report.html` will be generated in the same fol
   `a <= 3` becomes `a < 3`
 - **Void methods** > empties the body of void methods
   ```java
-  	void compute() { // BEFORE
-    	doSomething();
-    }
+  void compute() { // BEFORE
+    doSomething();
+  }
   ```
   ```java
-  	void compute() { } // AFTER
+  void compute() { } // AFTER
   ```
-- **Conditional negation** > negate boolean expressions  
+- **Conditional negation** > negates boolean expressions  
   `a || b` becomes `!(a || b)`
 - **Default returned value** when returning a primitive type value from a method
   ```java
-  	int getX() { // BEFORE
-    	return x;
-    }
+  int getX() { // BEFORE
+    return x;
+  }
   ```
   ```java
-  	int getX() { // AFTER
-    	return 0;
-    }
+  int getX() { // AFTER
+    return 0;
+  }
   ```
 - **Null default returned value** when returning an Object from a method  
   ```java
-  	List getList() { // BEFORE
-    	return myList;
-    }
+  List getList() { // BEFORE
+    return myList;
+  }
   ```
   ```java
-  	List getList() { // AFTER
-    	return null;
-    }
+  List getList() { // AFTER
+    return null;
+  }
   ```
 - **AND (&&) and OR (||)** operator swaps  
 `a || b` becomes `a && b`  
