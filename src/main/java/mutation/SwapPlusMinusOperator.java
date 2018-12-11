@@ -24,9 +24,10 @@ public class SwapPlusMinusOperator extends MutationOperator<CtBinaryOperator>
     @Override
     public boolean isToBeProcessed(CtBinaryOperator candidate)
     {
+
         return super.isToBeProcessed(candidate) &&
-                candidate.getLeftHandOperand().getType() != candidate.getFactory().Type().STRING &&
-                candidate.getRightHandOperand().getType() != candidate.getFactory().Type().STRING &&
+                candidate.getLeftHandOperand().getType().isPrimitive() &&
+                candidate.getRightHandOperand().getType().isPrimitive() &&
                 (candidate.getKind() == BinaryOperatorKind.PLUS || candidate.getKind() == BinaryOperatorKind.MINUS);
     }
 
