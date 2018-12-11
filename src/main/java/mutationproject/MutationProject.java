@@ -176,7 +176,7 @@ public class MutationProject
             writer.print("</td><td>");
             writer.print(killedMutants.size());
             writer.print("</td><td>");
-            writer.print((Math.floor(killedMutants.size() * 10000.0 / mutationCount) / 100) + "%");
+            writer.print((mutationCount == 0 ? 100 : Math.floor(killedMutants.size() * 10000.0 / mutationCount) / 100) + "%");
             writer.print("</td><td>");
             writer.print(String.format("%.2f", (System.currentTimeMillis() - startTime) * 0.001));
             writer.print("</td></tr></table><h2 style='color:red;'>Surviving Mutants</h2><table><tr><th>File</th>" +
