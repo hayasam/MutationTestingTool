@@ -1,4 +1,5 @@
 .idea/
 spooned/
 target/
-TestProject.iml
+*.iml
+*.html
