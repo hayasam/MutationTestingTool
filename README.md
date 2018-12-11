@@ -17,7 +17,7 @@ The project to be tested must follow the Maven project structure : `src/main/jav
 
 The test report `mutation_testing_report.html` will be generated in the same folder as the jar file.
 
-### What mutations can I apply to my source code?
+### What mutation operators can I apply to my source code?
 
 - **Conditional expressions** > mutates the value of conditional expression  
   `a < b` becomes `a <= b`  
@@ -64,9 +64,18 @@ The test report `mutation_testing_report.html` will be generated in the same fol
 
 ### How does it work?
 
-<!--- TO DO -->
+The Mutation Testing Tool creates a copy of the Maven project to be tested, and scans its `src` directory for source files.  
+For each file with `.java` extension:
 
-:sparkles: M A G I C :sparkles:
+* An AST (Abstract Syntax Tree) representing the top-level class is created using [Spoon](http://spoon.gforge.inria.fr/). The selected mutation operators are added as Spoon processors to generate mutations.
+* For each mutation that occurs:
+	* The source file is updated in the cloned project
+	* The test suite is run using the Maven command `mvn clean compile test`
+	* The test results are analyzed to check if the mutant survived
+	* The mutation is reverted in the AST
+* When all the mutations on a source file are done, the original content of the file is restored, and the process moves on to the next file.
+
+At the end of the process, the cloned project is deleted from disk and a HTML report is generated.
 
 ### Authors
 
