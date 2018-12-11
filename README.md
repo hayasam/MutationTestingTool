@@ -67,7 +67,7 @@ The test report `mutation_testing_report.html` will be generated in the same fol
 The Mutation Testing Tool creates a copy of the Maven project to be tested, and scans its `src` directory for source files.  
 For each file with `.java` extension:
 
-* An AST (Abstract Syntax Tree) representing the top-level class is created using [Spoon](http://spoon.gforge.inria.fr/). The selected mutation operators are added as Spoon processors to generate mutations.
+* An AST (Abstract Syntax Tree) representing the top-level class is created using [Spoon](https://github.com/INRIA/spoon). The selected mutation operators are added as Spoon processors to generate mutations.
 * For each mutation that occurs:
 	* The source file is updated in the cloned project
 	* The test suite is run using the Maven command `mvn clean compile test`
