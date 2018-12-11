@@ -17,33 +17,33 @@ class SwapPlusMinusOperatorTest
     private static CtType<?> type;
 
     @BeforeAll
-    static void setup() throws IOException
+    public static void setup() throws IOException
     {
         type = TestUtils.mutateTestClass(new SwapPlusMinusOperator(null, false));
     }
     @ParameterizedTest
     @ValueSource(strings = {"incrementCounter", "getCounter", "getCounterObject", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "isCounterVeryFarFromZero", "abstractMethod", "main"})
-    void testUnchangedMethods(String methodName)
+    public void testUnchangedMethods(String methodName)
     {
         CtMethod method = type.getMethodsByName(methodName).get(0);
         assertEquals(TestUtils.getOriginalMethodContent(methodName), method.toString());
     }
     @Test
-    void testMutationAddToCounter()
+    public void testMutationAddToCounter()
     {
         CtMethod method = type.getMethod("addToCounter", type.getFactory().Type().integerPrimitiveType());
         assertEquals(1, method.getBody().getStatements().size());
         assertEquals("counter = (counter) - value", method.getBody().getStatements().get(0).toString());
     }
     @Test
-    void testMutationSubtractFromCounter()
+    public void testMutationSubtractFromCounter()
     {
         CtMethod method = type.getMethod("subtractFromCounter", type.getFactory().Type().integerPrimitiveType());
         assertEquals(1, method.getBody().getStatements().size());
         assertEquals("counter = (counter) + value", method.getBody().getStatements().get(0).toString());
     }
     @Test
-    void testRevert() throws IOException
+    public void testRevert() throws IOException
     {
         CtType<?> type = TestUtils.mutateTestClass(new SwapPlusMinusOperator(null, true));
         assertEquals(TestUtils.getOriginalClassContent(), type.toString());

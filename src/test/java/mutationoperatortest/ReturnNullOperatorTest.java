@@ -17,26 +17,26 @@ class ReturnNullOperatorTest
     private static CtType<?> type;
 
     @BeforeAll
-    static void setup() throws IOException
+    public static void setup() throws IOException
     {
         type = TestUtils.mutateTestClass(new ReturnNullOperator(null, false));
     }
     @ParameterizedTest
     @ValueSource(strings = {"incrementCounter", "addToCounter", "subtractFromCounter", "getCounter", "isCounterHigh", "isCounterCloseToZero", "isCounterFarFromZero", "isCounterVeryFarFromZero", "abstractMethod", "main"})
-    void testUnchangedMethods(String methodName)
+    public void testUnchangedMethods(String methodName)
     {
         CtMethod method = type.getMethodsByName(methodName).get(0);
         assertEquals(TestUtils.getOriginalMethodContent(methodName), method.toString());
     }
     @Test
-    void testMutationGetCounter()
+    public void testMutationGetCounter()
     {
         CtMethod method = type.getMethod("getCounterObject");
         assertEquals(1, method.getBody().getStatements().size());
         assertEquals("return null", method.getBody().getStatements().get(0).toString());
     }
     @Test
-    void testRevert() throws IOException
+    public void testRevert() throws IOException
     {
         CtType<?> type = TestUtils.mutateTestClass(new ReturnNullOperator(null, true));
         assertEquals(TestUtils.getOriginalClassContent(), type.toString());

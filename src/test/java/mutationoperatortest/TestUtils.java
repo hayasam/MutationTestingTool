@@ -22,6 +22,11 @@ public class TestUtils
     private static SpoonResource loadTestFile() throws IOException
     {
         InputStream in = TestUtils.class.getResourceAsStream("/TestClass.java");
+        if(in == null)
+        {
+            System.err.println("Error: could not find resource /TestClass.java");
+            System.exit(1);
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder fileContent = new StringBuilder();
         String line;
