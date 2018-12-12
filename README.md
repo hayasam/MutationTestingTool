@@ -1,6 +1,6 @@
 # Mutation Testing Tool
 
-The Mutation Testing Tool allows you to test the completeness of your tests for a Java Maven project. It will apply various mutations to your project's source code and run your test suite for each mutation. 
+The [Mutation Testing Tool](https://github.com/HarisPasic/MutationTestingTool) allows you to test the completeness of your tests for a Java Maven project. It will apply various mutations to your project's source code and run your test suite for each mutation. 
 
 If a mutant survives (all tests pass after the mutation is applied), then the corresponding portion of code may not be well-tested. Note that if a mutant doesn't survive (at least one test fails), this does not necessarily mean that your tests are full proof.
 In summary, this tool helps you find sections of your code that could be more thoroughly tested.
